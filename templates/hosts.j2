@@ -1,0 +1,13 @@
+[cobblers]
+cobbler1 ansible_ssh_host={{ hpc_conf.cobbler.ansible_ssh_host }} ansible_ssh_port={{ hpc_conf.cobbler.ansible_ssh_port }} ansible_ssh_user={{ hpc_conf.cobbler.ansible_ssh_user }}
+
+[managers]
+{#增加-可以控制去除空白行-#}
+{% for manager in hpc_conf.managers -%}
+{{ manager.node_name }} ansible_ssh_host={{ manager.ip }} ansible_ssh_port={{ manager.port }} ansible_ssh_user={{ manager.user }}
+{% endfor %}
+
+[workers]
+{% for worker in hpc_conf.workers -%}
+{{ worker.node_name }} ansible_ssh_host={{ worker.ip }} ansible_ssh_port={{ worker.port }} ansible_ssh_user={{ worker.user }}
+{% endfor %}

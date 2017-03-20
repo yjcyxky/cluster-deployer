@@ -1,0 +1,18 @@
+---
+# file: host_vars/cobbler1
+user: supersan
+use_ssh_key: False
+disable_selinux: False
+ssh_key: /Users/FK/.ssh/id_rsa.pub
+manage_dhcp: 1
+manage_dns: 1
+pxe_just_once: 1
+server: 192.192.192.21
+next_server: 192.192.192.21
+dhcp_range_start: 192.192.192.10
+dhcp_range_end: 192.192.192.20
+dhcp_subnet: 192.192.192.0
+dhcp_netmask: 255.255.255.0
+dhcp_router: 192.192.192.21
+dhcp_dns: 192.192.192.21
+...

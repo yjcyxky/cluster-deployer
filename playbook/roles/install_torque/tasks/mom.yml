@@ -1,0 +1,50 @@
+  # RedHat related OSs
+  - name: Copy required packages
+    copy: src={{item}} dest=/tmp/{{item}}
+    with_items: '{{torque_worker_packages}}'
+
+  - name: Install rpm torque packages
+    yum: 
+      name: /tmp/{{item}}
+      state: present
+    with_items: '{{torque_worker_packages}}'
+    become: yes
+
+  - name: set the server_name for pbs_mom
+    copy: content={{torque_server}} dest=/var/spool/torque/server_name
+    notify:
+      - restart {{mom_service}}
+    become: yes
+
+  - lineinfile: dest="/var/spool/mom_priv/config" regexp=\$clienthost line='$clienthost {{torque_server}}' create=yes
+    notify:
+      - restart {{mom_service}}
+    become: yes
+
+  - lineinfile: dest="/var/spool/mom_priv/config" regexp=\$pbsserver line='$pbsserver {{torque_server}}'
+    notify:
+      - restart {{mom_service}}
+    become: yes
+     
+  - lineinfile: dest="/var/spool/mom_priv/config" regexp=/home line='$usecp          *:/home /home'
+    notify:
+      - restart {{mom_service}}
+    become: yes
+
+  - name: start {{mom_service}}
+    service: name={{mom_service}} state=started
+    become: yes
+
+  - name: Wait for munge to be installed on the server
+    local_action: wait_for path=/usr/sbin/create-munge-key
+    become: yes
+
+  - name: Create munge key on the server
+    local_action: command /usr/sbin/create-munge-key creates=/etc/munge/munge.key
+    become: yes
+
+  - name: set the attributes of munge key file
+    file: path=/etc/munge/munge.key owner=munge group=munge mode=0400
+    notify:
+      - restart munge
+    become: yes

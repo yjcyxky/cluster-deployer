@@ -1,0 +1,15 @@
+  - name: install dependencies for torque server
+    yum: name={{ item }} state=installed
+    with_items: "{{torque_dependencies}}"
+    become: True
+
+  - name: include {{torque_type_of_node}}.yml
+    include: "{{torque_type_of_node}}.yml"
+
+  - name: set pbs_server nodes
+    template: src=hosts.conf dest=/var/spool/torque/server_priv/nodes
+    notify:
+     - restart {{server_service}}
+     - restart {{scheduler_service}}
+    become: yes
+    when: torque_type_of_node == 'mom'

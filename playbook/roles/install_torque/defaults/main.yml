@@ -1,0 +1,39 @@
+---
+# Ansible role defaults to install cobbler - main.yml
+#
+# Copyright (C) 2016  Mark Einon <mark.einon@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License,
+# Version 2.1 only as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+torque_manager_packages: 
+  - "torque-6.0.2-1.adaptive.el7.centos.x86_64.rpm"
+  - "torque-server-6.0.2-1.adaptive.el7.centos.x86_64.rpm"
+  - "torque-devel-6.0.2-1.adaptive.el7.centos.x86_64.rpm"
+  - "maui-3.3.1-supersan.x86_64.rpm"
+  - "maui-devel-3.3.1-supersan.x86_64.rpm"
+
+torque_worker_packages:
+  - "torque-client-6.0.2-1.adaptive.el7.centos.x86_64.rpm"
+
+torque_dependencies:
+  - libtool
+  - openssl-devel
+  - libxml2-devel
+  - boost-devel
+  - gcc
+  - gcc-c++
+  - hwloc
+  - munge
+
+mom_service: pbs_mom
+server_service: pbs_server
+scheduler_service: 'maui.d'
+...

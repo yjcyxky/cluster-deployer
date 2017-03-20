@@ -1,0 +1,59 @@
+---
+# 当前仅支持部署一台Cobbler服务器
+distro_iso_url: http://ftp.sjtu.edu.cn/centos/7/isos/x86_64/CentOS-7-x86_64-DVD-1611.iso
+
+ansible:
+  priv_key_file: /Users/FK/.ssh/id_rsa
+
+cobbler_conf:
+  user: supersan
+  use_ssh_key: False
+  disable_selinux: False
+  ssh_key: /Users/FK/.ssh/id_rsa.pub
+  manage_dhcp: 1
+  manage_dns: 1
+  pxe_just_once: 1
+  server: 192.192.192.21
+  next_server: 192.192.192.21
+  dhcp_range_start: 192.192.192.10
+  dhcp_range_end: 192.192.192.20
+  dhcp_subnet: 192.192.192.0
+  dhcp_netmask: 255.255.255.0
+  dhcp_router: 192.192.192.21
+  dhcp_dns: 192.192.192.21
+
+client_conf:
+  distro_mnt: /media
+  distro_name: CentOS-7    # The distro kickstart file must be {{distro_name}}.ks
+  distro_iso: /dev/sr0
+  distro_arch: x86_64
+  system_name: centos7
+  kickstart_path: CentOS-7.ks
+  pxe_mac: 08:00:27:A2:FB:85
+  pxe_ip: 192.192.192.10
+
+ks_conf:
+
+hpc_conf:
+  cobbler:
+    ansible_ssh_host: 192.168.1.113
+    ansible_ssh_port: 22
+    ansible_ssh_user: root
+  managers: [
+    {
+      "node_name": "manager01",
+      "ip": "192.192.192.21",
+      "port": 22,
+      "user": supersan
+    }
+  ]
+  workers: [
+    {
+      "node_name": "worker01",
+      "ip": "192.192.192.21",
+      "port": 22,
+      "user": supersan
+    }
+  ]
+
+...

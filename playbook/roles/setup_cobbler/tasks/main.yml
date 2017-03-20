@@ -1,0 +1,54 @@
+---
+# Ansible role to install cobbler - main.yml
+#
+# Copyright (C) 2016  Mark Einon <mark.einon@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License,
+# Version 2.1 only as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+- name: install epel
+  yum: name=epel-release state=installed
+  become: True
+
+- name: install cobbler packages
+  yum: name={{ item }} state=installed
+  with_items: cobbler_packages
+  become: True
+
+- name: configure cobbler settings
+  template: src=settings.j2 dest=/etc/cobbler/settings backup=yes
+  become: True
+
+- name: configure cobbler modules.conf
+  template: src=modules.conf.j2 dest=/etc/cobbler/modules.conf backup=yes
+  become: True
+
+- name: configure cobbler dnsmasq.template
+  template: src=dnsmasq.template.j2 dest=/etc/cobbler/dnsmasq.template backup=yes
+  become: True
+
+- name: configure cobbler dhcp.template
+  template: src=dhcp.template.j2 dest=/etc/cobbler/dhcp.template backup=yes
+  become: True
+
+- name: configure tftp settings
+  template: src=tftp.j2 dest=/etc/xinetd.d/tftp backup=yes
+  become: True
+
+- name: restart services (httpd, cobblerd, xinetd)
+  service: name={{ item }} state=restarted enabled=yes
+  with_items: cobbler_services
+  become: True
+
+- name: sync cobbler
+  command: cobbler sync
+  become: True
+
+...

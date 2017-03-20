@@ -1,0 +1,18 @@
+---
+# file: host_vars/cobbler1
+user: {{ cobbler_conf.user }}
+use_ssh_key: {{ cobbler_conf.use_ssh_key }}
+disable_selinux: {{ cobbler_conf.disable_selinux }}
+ssh_key: {{ cobbler_conf.ssh_key }}
+manage_dhcp: {{ cobbler_conf.manage_dhcp }}
+manage_dns: {{ cobbler_conf.manage_dns }}
+pxe_just_once: {{ cobbler_conf.pxe_just_once }}
+server: {{ cobbler_conf.server }}
+next_server: {{ cobbler_conf.next_server }}
+dhcp_range_start: {{ cobbler_conf.dhcp_range_start }}
+dhcp_range_end: {{ cobbler_conf.dhcp_range_end }}
+dhcp_subnet: {{ cobbler_conf.dhcp_subnet }}
+dhcp_netmask: {{ cobbler_conf.dhcp_netmask }}
+dhcp_router: {{ cobbler_conf.dhcp_router }}
+dhcp_dns: {{ cobbler_conf.dhcp_dns }}
+...

@@ -1,0 +1,32 @@
+---
+# Ansible role defaults to install cobbler - main.yml
+#
+# Copyright (C) 2016  Mark Einon <mark.einon@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License,
+# Version 2.1 only as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+cobbler_packages:
+    - cobbler
+    - cobbler-web
+    - dnsmasq
+    - syslinux
+    - pykickstart
+    - xinetd
+
+cobbler_services:
+    - httpd
+    - cobblerd
+    - xinetd
+
+dns_module: manage_dnsmasq
+dhcp_module: manage_dnsmasq
+
+...
