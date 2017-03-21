@@ -1,0 +1,14 @@
+{#增加-可以控制去除空白行-#}
+# Managers
+{% for manager in hpc_conf.managers -%}
+{{ manager.ip }}    {{ manager.node_name }}
+{{ manager.infiniband_ip }} ib-{{ manager.node_name }}
+{% endfor %}
+
+# Workers
+{% for worker in hpc_conf.workers -%}
+{{ worker.ip }} {{ worker.node_name }}
+{{ worker.infiniband_ip }}  ib-{{ worker.node_name }}
+{% endfor %}
+
+

@@ -10,6 +10,10 @@
     with_items: '{{torque_worker_packages}}'
     become: yes
 
+  - name: reload systemd
+    command: systemctl --system daemon-reload
+    become: yes
+
   - name: set the server_name for pbs_mom
     copy: content={{torque_server}} dest=/var/spool/torque/server_name
     notify:
@@ -32,15 +36,13 @@
     become: yes
 
   - name: start {{mom_service}}
-    service: name={{mom_service}} state=started
-    become: yes
-
-  - name: Wait for munge to be installed on the server
-    local_action: wait_for path=/usr/sbin/create-munge-key
+    service: name={{mom_service}} state=started enabled=yes
     become: yes
 
   - name: Create munge key on the server
-    local_action: command /usr/sbin/create-munge-key creates=/etc/munge/munge.key
+    command: /usr/sbin/create-munge-key creates=/etc/munge/munge.key
+    notify:
+      - restart munge
     become: yes
 
   - name: set the attributes of munge key file

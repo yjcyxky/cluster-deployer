@@ -11,6 +11,10 @@
     with_items: '{{torque_manager_packages}}'
     become: yes
 
+  - name: reload systemd
+    command: systemctl --system daemon-reload
+    become: yes
+
   # Torque tasks
   - name: set server_name
     copy: content={{torque_server}} dest=/var/spool/torque/server_name
@@ -43,15 +47,15 @@
     become: yes
 
   - name: start scheduler_service
-    service: name={{scheduler_service}} state=started
+    service: name={{scheduler_service}} state=started enabled=yes
     become: yes
 
   - name: start server_service
-    service: name={{server_service}} state=started
+    service: name={{server_service}} state=started enabled=yes
     become: yes
 
   - name: start munge
-    service: name=munge state=started
+    service: name=munge state=started enabled=yes
     become: yes
 
   - name: create a queue

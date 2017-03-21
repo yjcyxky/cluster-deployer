@@ -13,18 +13,21 @@
 # GNU General Public License for more details.
 #
 
-- name: install torque to managers
-  hosts: managers
-  roles:
-    - role: 'install_torque'
-      torque_server: "{{ansible_hostname}}"
-      torque_type_of_node: 'server'
-
+# 必须先安装计算节点再安装管理节点
 - name: install torque to workers
   hosts: workers
   roles:
     - role: 'install_torque'
       torque_server: "{{ansible_hostname}}"
       torque_type_of_node: 'mom'
+      internet_network: 'no'
+
+- name: install torque to managers
+  hosts: managers
+  roles:
+    - role: 'install_torque'
+      torque_server: "{{ansible_hostname}}"
+      torque_type_of_node: 'server'
+      internet_network: 'no'
 
 ...

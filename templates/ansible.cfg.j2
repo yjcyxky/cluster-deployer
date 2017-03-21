@@ -4,3 +4,7 @@ hostfile = hosts
 ask_pass = True
 ask_sudo_pass = True
 host_key_checking = False
+gathering=smart
+fact_caching = jsonfile
+fact_caching_connection = ./cache/facts.json
+fact_caching_timeout = 86400

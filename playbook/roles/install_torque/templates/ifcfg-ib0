@@ -1,0 +1,8 @@
+DEVICE="ib0"
+BOOTPROTO="static"
+HWADDR={{ ansible_ib0['macaddress'] }}
+NM_CONTROLLED="yes"
+ONBOOT="yes"
+TYPE="InfiniBand"
+IPADDR={{infiniband_ip}}
+NETMASK=255.255.255.0

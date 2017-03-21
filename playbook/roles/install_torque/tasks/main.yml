@@ -1,15 +1,31 @@
+  - name: set infiniband ip address
+    template: src=ifcfg-ib0 dest=/etc/sysconfig/network-scripts/ifcfg-ib0
+    become: yes
+
+  - name: restart network
+    service: name=network state=restarted
+    become: yes
+
   - name: install dependencies for torque server
     yum: name={{ item }} state=installed
     with_items: "{{torque_dependencies}}"
     become: True
+    when: internet_network == 'yes'
 
   - name: include {{torque_type_of_node}}.yml
     include: "{{torque_type_of_node}}.yml"
 
   - name: set pbs_server nodes
-    template: src=hosts.conf dest=/var/spool/torque/server_priv/nodes
+    template: src=torque_nodes.conf dest=/var/spool/torque/server_priv/nodes
     notify:
      - restart {{server_service}}
      - restart {{scheduler_service}}
     become: yes
-    when: torque_type_of_node == 'mom'
+    when: torque_type_of_node == 'server'
+
+  - name: gather facts again
+    setup:
+
+  - name: set /etc/hosts
+    template: src=etc_hosts dest=/etc/hosts
+    become: yes

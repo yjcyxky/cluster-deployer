@@ -25,18 +25,26 @@ def render(config_vars, template_file):
     return rendered_text
 
 def gen_config_file(config_vars, template_file, output_dir):
-    if not os.path.isdir(output_dir):
-        print("No such directory: %s" % output_dir)
-        sys.exit(1)
+    def conf_generator(config_vars, template_file, output_dir):
+        if not os.path.isdir(output_dir):
+            print("No such directory: %s" % output_dir)
+            sys.exit(1)
 
-    if re.search("[a-zA-Z0-9\.\-_]+\.j2", template_file):
-        output_file = template_file[:-3]
-        with open(os.path.join(output_dir, output_file), 'w') as f:
-            f.write(render(config_vars, template_file))
-        return True
+        if re.search("[a-zA-Z0-9\.\-_]+\.j2", template_file):
+            output_file = template_file[:-3]
+            with open(os.path.join(output_dir, output_file), 'w') as f:
+                f.write(render(config_vars, template_file))
+            return True
+        else:
+            print("模板文件名不符合要求，只能包含大小写字母、数字、下划线、点号，且末尾必须以.j2结尾")
+            sys.exit(2)
+
+    if isinstance(template_file, tuple) and isinstance(output_dir, tuple):
+        for file_name, dir_name in zip(template_file, output_dir):
+            conf_generator(config_vars, file_name, dir_name)
     else:
-        print("模板文件名不符合要求，只能包含大小写字母、数字、下划线、点号，且末尾必须以.j2结尾")
-        sys.exit(2)
+        conf_generator(config_vars, template_file, output_dir)
+    return True
 
 HPC_CONFIG = parse_hpc_config(HPC_CONFIG_FILE)
 ARGS_CONFIG = {
@@ -47,8 +55,8 @@ ARGS_CONFIG = {
         'config_vars': HPC_CONFIG.fromkeys(('ansible',), HPC_CONFIG.get('ansible'))
     },
     'hpc_conf': {
-        'output_dir': os.path.join(BASE_DIR, "playbook"),
-        'template_file': 'hosts.j2',
+        'output_dir': (os.path.join(BASE_DIR, "playbook"), os.path.join(BASE_DIR, "playbook", "roles", "install_torque", "templates")),
+        'template_file': ('hosts.j2', "etc_hosts.j2"),
         'config_vars': HPC_CONFIG.fromkeys(('hpc_conf',), HPC_CONFIG.get('hpc_conf'))
     },
     'cobbler_conf': {
