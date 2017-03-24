@@ -3,11 +3,12 @@ cobbler1 ansible_ssh_host={{ hpc_conf.cobbler.ansible_ssh_host }} ansible_ssh_po
 
 [managers]
 {#增加-可以控制去除空白行-#}
-{% for manager in hpc_conf.managers -%}
-{{ manager.node_name }} ansible_ssh_host={{ manager.ip }} ansible_ssh_port={{ manager.port }} ansible_ssh_user={{ manager.user }} infiniband_ip={{manager.infiniband_ip}}
-{% endfor %}
+{{ hpc_conf.manager.node_name }} ansible_ssh_host={{ hpc_conf.manager.ip }} ansible_ssh_port={{ hpc_conf.manager.port }} ansible_ssh_user={{ hpc_conf.manager.user }} infiniband_ip={{ hpc_conf.manager.infiniband_ip }}
 
 [workers]
 {% for worker in hpc_conf.workers -%}
 {{ worker.node_name }} ansible_ssh_host={{ worker.ip }} ansible_ssh_port={{ worker.port }} ansible_ssh_user={{ worker.user }} infiniband_ip={{worker.infiniband_ip}}
 {% endfor %}
+
+[storage]
+{{ hpc_conf.storage.node_name }} ansible_ssh_host={{ hpc_conf.storage.ip }} ansible_ssh_port={{ hpc_conf.storage.port }} ansible_ssh_user={{ hpc_conf.storage.user }} infiniband_ip={{ hpc_conf.storage.infiniband_ip }}

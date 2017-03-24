@@ -39,15 +39,19 @@ hpc_conf:
     ansible_ssh_host: 192.168.1.113
     ansible_ssh_port: 22
     ansible_ssh_user: root
-  managers: [
-    {
-      "node_name": "anchordx",
-      "ip": "192.192.192.10",
-      "infiniband_ip": "10.10.10.10",
-      "port": 22,
-      "user": supersan
-    }
-  ]
+  storage: 
+    node_name: "anchordx"
+    ip: 192.192.192.10
+    infiniband_ip: 10.10.10.10
+    port: 22
+    user: supersan
+    pools: [ "home", "opt" ]
+  manager:
+    node_name: "anchordx"
+    ip: "192.192.192.10"
+    infiniband_ip: "10.10.10.10"
+    port: 22
+    user: supersan
   workers: [
     {
       "node_name": "anchordx01",

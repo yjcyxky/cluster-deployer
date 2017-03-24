@@ -47,19 +47,19 @@
     become: yes
 
   - name: start scheduler_service
-    service: name={{scheduler_service}} state=started enabled=yes
+    service: name={{scheduler_service}} state=restarted enabled=yes
     become: yes
 
   - name: start server_service
-    service: name={{server_service}} state=started enabled=yes
+    service: name={{server_service}} state=restarted enabled=yes
     become: yes
 
   - name: start munge
-    service: name=munge state=started enabled=yes
+    service: name=munge state=restarted enabled=yes
     become: yes
 
   - name: create a queue
-    shell: echo "{{ lookup('file', 'queue.txt') }}" | qmgr creates=/var/spool/server_priv/queues/batch
+    shell: cat "{{ lookup('file', 'queue.txt') }}" | qmgr creates=/var/spool/server_priv/queues/batch
     become: yes
 
 ...

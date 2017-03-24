@@ -1,0 +1,32 @@
+---
+# Ansible role to import a distro to cobbler - main.yml
+#
+# Copyright (C) 2016  JingchengYang <yjcyxky@163.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License,
+# Version 2.1 only as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+  - name: copy nfs exports file to {{ansible_host_name}}
+    copy: src=exports dest=/etc/ owner=root group=root mode=644 force=yes
+    become: yes
+
+  - name: restart nfs
+    service: name=nfs state=restarted enabled=yes
+    become: yes
+
+  - name: copy autofs files to remote host
+    copy: src=autofs/ dest=/etc/ owner=root group=root mode=644 force=yes
+    become: yes
+
+  - name: restart autofs
+    service: name=autofs state=restarted enabled=yes 
+    become: yes
+
+...

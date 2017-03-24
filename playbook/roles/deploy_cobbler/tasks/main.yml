@@ -1,17 +1,13 @@
 ---
 # Ansible role to install cobbler - main.yml
 #
-# Copyright (C) 2016  Mark Einon <mark.einon@gmail.com>
+# Copyright (C) 2016  JingchengYang <yjcyxky@163.com>
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License,
-# Version 2.1 only as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
+
+- name: disable selinux
+  selinux: state=disabled
+  become: True
+  when: disable_selinux
 
 - name: install epel
   yum: name=epel-release state=installed
@@ -33,10 +29,12 @@
 - name: configure cobbler dnsmasq.template
   template: src=dnsmasq.template.j2 dest=/etc/cobbler/dnsmasq.template backup=yes
   become: True
+  when: {{ dhcp_module }} == 'manage_dnsmasq'
 
 - name: configure cobbler dhcp.template
   template: src=dhcp.template.j2 dest=/etc/cobbler/dhcp.template backup=yes
   become: True
+  when: {{ dhcp_module }} == 'manage_isc'
 
 - name: configure tftp settings
   template: src=tftp.j2 dest=/etc/xinetd.d/tftp backup=yes

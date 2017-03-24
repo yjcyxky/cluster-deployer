@@ -1,5 +1,5 @@
 ---
-# Ansible role defaults to install cobbler - main.yml
+# Ansible playbook to install cobbler - main.yml
 #
 # Copyright (C) 2016  Mark Einon <mark.einon@gmail.com>
 #
@@ -13,20 +13,21 @@
 # GNU General Public License for more details.
 #
 
-cobbler_packages:
-    - cobbler
-    - cobbler-web
-    - dnsmasq
-    - syslinux
-    - pykickstart
-    - xinetd
+# 必须先安装计算节点再安装管理节点
+- name: install torque to workers
+  hosts: workers
+  roles:
+    - role: 'deploy_torque'
+      torque_server: "{{ansible_hostname}}"
+      torque_type_of_node: 'mom'
+      internet_network: 'no'
 
-cobbler_services:
-    - httpd
-    - cobblerd
-    - xinetd
-
-dns_module: manage_dnsmasq
-dhcp_module: manage_dnsmasq
+- name: install torque to managers
+  hosts: managers
+  roles:
+    - role: 'deploy_torque'
+      torque_server: "{{ansible_hostname}}"
+      torque_type_of_node: 'server'
+      internet_network: 'no'
 
 ...

@@ -1,0 +1,2 @@
+# Note: you must specify / in location, not your share directory, otherwise it can't mount right
+*   -rw,bg,fstype=nfs4 ib-anchordx:/home/&

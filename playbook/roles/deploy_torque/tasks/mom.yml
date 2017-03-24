@@ -15,28 +15,28 @@
     become: yes
 
   - name: set the server_name for pbs_mom
-    copy: content={{torque_server}} dest=/var/spool/torque/server_name
+    copy: content="anchordx" dest=/var/spool/torque/server_name
     notify:
       - restart {{mom_service}}
     become: yes
 
-  - lineinfile: dest="/var/spool/mom_priv/config" regexp=\$clienthost line='$clienthost {{torque_server}}' create=yes
+  - lineinfile: dest="/var/spool/torque/mom_priv/config" regexp=\$clienthost line='$clienthost {{torque_server}}' create=yes
     notify:
       - restart {{mom_service}}
     become: yes
 
-  - lineinfile: dest="/var/spool/mom_priv/config" regexp=\$pbsserver line='$pbsserver {{torque_server}}'
+  - lineinfile: dest="/var/spool/torque/mom_priv/config" regexp=\$pbsserver line='$pbsserver anchordx'
     notify:
       - restart {{mom_service}}
     become: yes
      
-  - lineinfile: dest="/var/spool/mom_priv/config" regexp=/home line='$usecp          *:/home /home'
+  - lineinfile: dest="/var/spool/torque/mom_priv/config" regexp=/home line='$usescp          *:/home /home'
     notify:
       - restart {{mom_service}}
     become: yes
 
   - name: start {{mom_service}}
-    service: name={{mom_service}} state=started enabled=yes
+    service: name={{mom_service}} state=restarted enabled=yes
     become: yes
 
   - name: Create munge key on the server

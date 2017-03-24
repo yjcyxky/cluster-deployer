@@ -1,0 +1,3 @@
+/exports 10.10.10.0/24(ro,fsid=0)
+/exports/{{pool}} 10.10.10.0/24(rw,root_squash)
+/exports/opt 10.10.10.0/24(rw,root_squash)

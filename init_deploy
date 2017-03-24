@@ -1,5 +1,9 @@
 #!/bin/env python
-import os, yaml, jinja2, re, sys, argparse
+#
+# Copyright (C) 2016  JingchengYang <yjcyxky@163.com>
+#
+
+import os, yaml, jinja2, re, sys, argparse, copy
 
 BASE_DIR = os.path.dirname(__file__)
 HPC_CONFIG_FILE = os.path.join(BASE_DIR, "hpc_config.yml")
@@ -24,11 +28,48 @@ def render(config_vars, template_file):
     rendered_text = template.render(config_vars)
     return rendered_text
 
+def check_hpc_conf(hpc_conf):
+    manager = hpc_conf.get("manager")
+    storage = hpc_conf.get("storage")
+    workers = hpc_conf.get("workers")
+
+    manager_ip = manager.get('ip')
+    manager_ib_ip = manager.get('infiniband_ip')
+    storage_ip = storage.get('ip')
+    storage_ib_ip = storage.get('infiniband_ip')
+
+    ip_addr = [ worker.get('ip') for worker in workers ]
+    ib_ip_addr = [worker.get('infiniband_ip') for worker in workers ]
+
+    ip_addr.extend([manager_ip, storage_ip])
+    ib_ip_addr.extend([manager_ib_ip, storage_ib_ip])
+
+    if manager_ip == storage_ip or manager_ib_ip == storage_ib_ip:
+        # manager的IP地址与storage相同时，则manager与storage在同一台机器上，此时不允许再有机器IP地址与之相同
+        if len(ip_addr) - 1 > len(set(ip_addr)) or len(ib_ip_addr) - 1 > len(set(ib_ip_addr)):
+            print("manager或storage与workers中IP地址有重复，请重新设置")
+            sys.exit(1)
+    else:
+        # manager的IP地址与storage不同时，那么所有地址都应该不同
+        if len(ip_addr) > len(set(ip_addr)) or len(ib_ip_addr) - 1 > len(set(ib_ip_addr)):
+            print("manager或storage与workers中IP地址有重复，请重新设置")
+            sys.exit(1)
+
 def gen_config_file(config_vars, template_file, output_dir):
     def conf_generator(config_vars, template_file, output_dir):
         if not os.path.isdir(output_dir):
             print("No such directory: %s" % output_dir)
             sys.exit(1)
+
+        # 依据hpc_conf-->storage-->pools生成autofs配置文件
+        if re.search("auto\.[a-zA-Z\.\-_]+\.j2", template_file) and template_file != 'auto.master.j2':
+            pools = config_vars['hpc_conf']['storage']['pools']
+            for pool in pools:
+                pool_config_vars = copy.deepcopy(config_vars)
+                pool_config_vars['hpc_conf']['storage']['pool_name'] = pool
+                with open(os.path.join(output_dir, "auto.%s" % pool), 'w') as f:
+                    f.write(render(pool_config_vars, template_file))
+            return True
 
         if re.search("[a-zA-Z0-9\.\-_]+\.j2", template_file):
             output_file = template_file[:-3]
@@ -47,6 +88,14 @@ def gen_config_file(config_vars, template_file, output_dir):
     return True
 
 HPC_CONFIG = parse_hpc_config(HPC_CONFIG_FILE)
+PLAYBOOK_DIR = os.path.join(BASE_DIR, "playbook")
+ROLE_DIR = os.path.join(BASE_DIR, "playbook", "roles")
+NFS_FILES_DIR = os.path.join(ROLE_DIR, "deploy_nfs", "files")
+TORQUE_TEMPLATE_DIR = os.path.join(ROLE_DIR, "deploy_torque", "templates")
+COBBLER_VARS_DIR = os.path.join(ROLE_DIR, "deploy_cobbler", "vars")
+DISTRO_VARS_DIR = os.path.join(ROLE_DIR, "add_distro", "vars")
+DISTRO_FILES_DIR = os.path.join(ROLE_DIR, "add_distro", "files")
+
 ARGS_CONFIG = {
     'ansible': {
         'output_dir': os.path.join(BASE_DIR, "playbook"),
@@ -55,22 +104,22 @@ ARGS_CONFIG = {
         'config_vars': HPC_CONFIG.fromkeys(('ansible',), HPC_CONFIG.get('ansible'))
     },
     'hpc_conf': {
-        'output_dir': (os.path.join(BASE_DIR, "playbook"), os.path.join(BASE_DIR, "playbook", "roles", "install_torque", "templates")),
-        'template_file': ('hosts.j2', "etc_hosts.j2"),
+        'output_dir': (PLAYBOOK_DIR, TORQUE_TEMPLATE_DIR, NFS_FILES_DIR, NFS_FILES_DIR),
+        'template_file': ('hosts.j2', "etc_hosts.j2", "auto.master.j2", "auto.pool.j2"),
         'config_vars': HPC_CONFIG.fromkeys(('hpc_conf',), HPC_CONFIG.get('hpc_conf'))
     },
     'cobbler_conf': {
-        'output_dir': os.path.join(BASE_DIR, "playbook", "host_vars"),
+        'output_dir': COBBLER_VARS_DIR,
         'template_file': 'cobbler1.yml.j2',
         'config_vars': HPC_CONFIG.fromkeys(('cobbler_conf',), HPC_CONFIG.get('cobbler_conf'))
     },
     'client_conf': {
-        'output_dir': os.path.join(BASE_DIR, "setup_cobbler", "clients"),
+        'output_dir': DISTRO_VARS_DIR,
         'template_file': 'client.yml.j2',
         'config_vars': HPC_CONFIG.fromkeys(('client_conf',), HPC_CONFIG.get('client_conf'))
     },
     'ks_conf': {
-        'output_dir': os.path.join(BASE_DIR, "playbook", "roles", "add_distro", "files"),
+        'output_dir': DISTRO_FILES_DIR,
         'template_file': 'ks_template.ks.j2',
         'config_vars': HPC_CONFIG.fromkeys(('ks_conf',), HPC_CONFIG.get('ks_conf'))
     }
@@ -90,12 +139,15 @@ def main():
     # print(args.func(args))
 
     # generate ansible configure file
+    # 校验HPC配置信息
+    check_hpc_conf(HPC_CONFIG.get('hpc_conf'))
+
     if gen_config_file(**ARGS_CONFIG.get('ansible')):
         print("生成ansible.cfg配置文件：成功")
 
     # generate cobbler host configure file
     if gen_config_file(**ARGS_CONFIG.get('hpc_conf')):
-        print("生成hosts配置文件：成功")
+        print("生成hosts/etc_hosts/autofs配置文件：成功")
 
     if gen_config_file(**ARGS_CONFIG.get('cobbler_conf')):
         print("生成cobbler1.yml配置文件：成功")

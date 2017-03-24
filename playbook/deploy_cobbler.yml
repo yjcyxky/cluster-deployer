@@ -16,7 +16,6 @@
 - name: deploy and setup cobbler server
   hosts: cobblers
   roles:
-      - prepare_env
-      - setup_cobbler
+      - deploy_cobbler
 
 ...
