@@ -8,7 +8,6 @@ ansible:
 cobbler_conf:
   user: supersan
   use_ssh_key: False
-  disable_selinux: False
   ssh_key: /Users/FK/.ssh/id_rsa.pub
   manage_dhcp: 1
   manage_dns: 1
@@ -36,7 +35,7 @@ ks_conf:
 
 hpc_conf:
   cobbler:
-    ansible_ssh_host: 192.168.1.113
+    ansible_ssh_host: 192.168.1.100
     ansible_ssh_port: 22
     ansible_ssh_user: root
   storage: 

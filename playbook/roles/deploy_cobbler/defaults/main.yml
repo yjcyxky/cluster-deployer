@@ -11,6 +11,7 @@ cobbler_packages:
     - syslinux
     - pykickstart
     - xinetd
+    - dhcp
 
 cobbler_services:
     - httpd

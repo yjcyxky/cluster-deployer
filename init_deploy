@@ -110,7 +110,7 @@ ARGS_CONFIG = {
     },
     'cobbler_conf': {
         'output_dir': COBBLER_VARS_DIR,
-        'template_file': 'cobbler1.yml.j2',
+        'template_file': 'main.yml.j2',
         'config_vars': HPC_CONFIG.fromkeys(('cobbler_conf',), HPC_CONFIG.get('cobbler_conf'))
     },
     'client_conf': {
@@ -150,7 +150,7 @@ def main():
         print("生成hosts/etc_hosts/autofs配置文件：成功")
 
     if gen_config_file(**ARGS_CONFIG.get('cobbler_conf')):
-        print("生成cobbler1.yml配置文件：成功")
+        print("生成main.yml配置文件：成功")
 
 if __name__ == '__main__':
     main()
