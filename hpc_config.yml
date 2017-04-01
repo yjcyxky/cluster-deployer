@@ -1,10 +1,25 @@
 ---
-# 当前仅支持部署一台Cobbler服务器
+# 版权声明：Nordata BioTech Company
+# --------------------------
+# 描述：集群自动化部署配置文件，用于定义集群部署过程中所需要的配置信息；
+# 注意：使用此软件需要所有节点已经完成硬件部署，部署顺序为：deploy_cobbler(部署安装服务器)
+#      configure_cobbler(配置cobbler、添加操作系统等，可通过此软件完成或者登陆Web APP设置)
+#      deploy_torque(部署集群管理软件)、deploy_infiniband(部署Infiniband驱动)、
+#      deploy_nfs(部署NFS服务)、deploy_nis(部署统一账户系统)、add_users(添加账户)
+
+# Author：YJC
+# Email：yjcyxky@163.com
+# --------------------------
+# ISO镜像下载链接
 distro_iso_url: http://ftp.sjtu.edu.cn/centos/7/isos/x86_64/CentOS-7-x86_64-DVD-1611.iso
 
+# ansible配置文件，如果未做免密登录可不设置
 ansible:
   priv_key_file: /Users/FK/.ssh/id_rsa
 
+# cobbler服务器配置
+## 当前仅支持部署一台Cobbler服务器
+## 注意：server对应的IP地址必须已经在目标安装服务器上启用，且与集群业务网络连通
 cobbler_conf:
   user: supersan
   use_ssh_key: False
@@ -21,6 +36,8 @@ cobbler_conf:
   dhcp_router: 192.192.192.21
   dhcp_dns: 192.192.192.21
 
+# 客户端配置(即非安装服务器所需镜像，管理节点+存储节点+计算节点)
+## TODO：(此部分配置文件暂未使用)
 client_conf:
   distro_mnt: /media
   distro_name: CentOS-7    # The distro kickstart file must be {{distro_name}}.ks
@@ -31,8 +48,16 @@ client_conf:
   pxe_mac: 08:00:27:A2:FB:85
   pxe_ip: 192.192.192.10
 
+# kickstart配置
+## 用于生成系统自动化安装脚本所需的kickstart配置文件
+## TODO：与client_conf结合使用
 ks_conf:
 
+# 集群配置
+## 注意：
+### cobbler区块定义的是ansible管理器的信息，也就是运行ansible-playbook所在的机器
+### storage区块当前只支持一台机器，且必须是NFS所在服务器，可于manager在同一台机器
+### workers区块支持定义多台机器，当有N台计算节点需要配置时，应该将其均添加进来
 hpc_conf:
   cobbler:
     ansible_ssh_host: 192.168.1.100
