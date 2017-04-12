@@ -59,7 +59,7 @@
     become: yes
 
   - name: create a queue
-    shell: cat "{{ lookup('file', 'queue.txt') }}" | qmgr creates=/var/spool/server_priv/queues/batch
+    shell: cat "{{ lookup('file', 'queue.txt') }}" | qmgr creates=/var/spool/torque/server_priv/queues/batch
     become: yes
 
 ...

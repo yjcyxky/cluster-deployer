@@ -13,6 +13,7 @@ clearpart --all --initlabel
 text
 # Firewall configuration
 firewall --disable
+selinux --disable
 # Run the Setup Agent on first boot
 firstboot --disable
 # System keyboard

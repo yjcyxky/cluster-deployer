@@ -31,9 +31,10 @@ ONBOOT=yes
 ```
 
 # Quickstart Guide
-1. 修改hpc_config.yml文件，依据实际情况填入相应的参数
-2. 运行`deploy_hpc -i deploy_cobbler -c hpc_config.yml`，将会在ansible_ssh_host对应的机器上安装cobbler(注意：要求主机至少有两张网卡，且其中一张与外网连通，另外一张网卡IP地址设置为192.192.192.21)[运行过程中会要求输入安装服务器的账户密码和sudo密码]
-3. 运行`deploy_hpc -i deploy_torque -c hpc_config.yml`将会依据hpc_config.yml文件中指定的集群管理节点和计算节点配置安装torque等集群软件
+1. 拷贝hpc_config.yml.sample为hpc_config.yml文件
+2. 修改hpc_config.yml文件，依据实际情况填入相应的参数
+3. 运行`deploy_hpc -i deploy_cobbler -c hpc_config.yml`，将会在ansible_ssh_host对应的机器上安装cobbler(注意：要求主机至少有两张网卡，且其中一张与外网连通，另外一张网卡IP地址设置为192.192.192.21)[运行过程中会要求输入安装服务器的账户密码和sudo密码]
+4. 运行`deploy_hpc -i deploy_torque -c hpc_config.yml`将会依据hpc_config.yml文件中指定的集群管理节点和计算节点配置安装torque等集群软件
 
 # 软件详解
 1. init_deploy负责将templates目录下的jinja2文件渲染成相关配置文件并拷贝到指定目录

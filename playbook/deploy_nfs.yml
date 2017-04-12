@@ -1,0 +1,30 @@
+---
+# Ansible playbook to install cobbler - main.yml
+#
+# Copyright (C) 2016  Mark Einon <mark.einon@gmail.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License,
+# Version 2.1 only as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+
+# 必须先安装管理节点再安装计算节点
+# 前提条件所有的硬盘和卷已经挂载成功
+- name: install nfs to managers
+  hosts: managers
+  roles:
+    - role: 'deploy_nfs'
+      type_of_node: 'manager'
+
+- name: install autofs to workers
+  hosts: workers
+  roles:
+    - role: 'deploy_nfs'
+      type_of_node: 'worker'
+
+...

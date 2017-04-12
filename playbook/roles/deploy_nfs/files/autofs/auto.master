@@ -22,4 +22,6 @@
 #
 +auto.master
 /home   /etc/auto.home
-/opt   /etc/auto.opt
+/anchordx-opt   /etc/auto.anchordx-opt
+/Scratch   /etc/auto.Scratch
+/Src_Data1   /etc/auto.Src_Data1

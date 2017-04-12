@@ -7,6 +7,7 @@ anchordx ansible_ssh_host=192.192.192.10 ansible_ssh_port=22 ansible_ssh_user=su
 [workers]
 anchordx01 ansible_ssh_host=192.192.192.11 ansible_ssh_port=22 ansible_ssh_user=supersan infiniband_ip=10.10.10.11
 anchordx02 ansible_ssh_host=192.192.192.12 ansible_ssh_port=22 ansible_ssh_user=supersan infiniband_ip=10.10.10.12
+anchordx03 ansible_ssh_host=192.192.192.13 ansible_ssh_port=22 ansible_ssh_user=supersan infiniband_ip=10.10.10.13
 
 
 [storage]
