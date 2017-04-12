@@ -1,3 +1,7 @@
+#!/bin/bash
+# Author: JingchengYang<yjcyxky@163.com>
+# 功能：在集群所有节点间建立免密登录
+
 show_help(){
 cat << EOF
 usage: $(echo $0) [-a] [-f <HOST_FILE>]
