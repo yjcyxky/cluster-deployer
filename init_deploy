@@ -67,7 +67,7 @@ def gen_config_file(config_vars, template_file, output_dir):
             for pool in pools:
                 pool_config_vars = copy.deepcopy(config_vars)
                 pool_config_vars['hpc_conf']['storage']['pool_name'] = pool
-                with open(os.path.join(output_dir, "auto.%s" % pool), 'w') as f:
+                with open(os.path.join(output_dir, "auto.%s" % pool.replace('/', '_')), 'w') as f:
                     f.write(render(pool_config_vars, template_file))
             return True
 

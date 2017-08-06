@@ -15,7 +15,7 @@
     become: yes
 
   - name: set the server_name for pbs_mom
-    copy: content="anchordx" dest=/var/spool/torque/server_name
+    copy: content="{{}}" dest=/var/spool/torque/server_name
     notify:
       - restart {{mom_service}}
     become: yes
@@ -25,7 +25,7 @@
       - restart {{mom_service}}
     become: yes
 
-  - lineinfile: dest="/var/spool/torque/mom_priv/config" regexp=\$pbsserver line='$pbsserver anchordx'
+  - lineinfile: dest="/var/spool/torque/mom_priv/config" regexp=\$pbsserver line='$pbsserver {{}}'
     notify:
       - restart {{mom_service}}
     become: yes

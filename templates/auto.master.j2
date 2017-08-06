@@ -22,5 +22,5 @@
 #
 +auto.master
 {% for pool in hpc_conf.storage.pools -%}
-/{{ pool }}   /etc/auto.{{ pool }}
+/{{ pool }}   /etc/auto.{{ pool | replace('/', '_') }}
 {% endfor %}
