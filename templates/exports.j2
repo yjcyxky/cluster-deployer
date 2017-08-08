@@ -1,4 +1,4 @@
 /exports 10.10.10.0/24(ro,fsid=0)
 {% for pool in hpc_conf.storage.pools -%}
-/exports/{{pool}} 10.10.10.0/24(rw,root_squash)
+/exports/{{pool | replace('/', '_') }} 10.10.10.0/24(rw,root_squash)
 {% endfor %}
