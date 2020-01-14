@@ -93,9 +93,6 @@ ROLE_DIR = os.path.join(BASE_DIR, "playbook", "roles")
 NFS_FILES_DIR = os.path.join(ROLE_DIR, "deploy_nfs", "files")
 AUTOFS_FILES_DIR = os.path.join(NFS_FILES_DIR, "autofs")
 TORQUE_TEMPLATE_DIR = os.path.join(ROLE_DIR, "deploy_torque", "templates")
-COBBLER_VARS_DIR = os.path.join(ROLE_DIR, "deploy_cobbler", "vars")
-DISTRO_VARS_DIR = os.path.join(ROLE_DIR, "add_distro", "vars")
-DISTRO_FILES_DIR = os.path.join(ROLE_DIR, "add_distro", "files")
 
 ARGS_CONFIG = {
     'ansible': {
@@ -106,23 +103,8 @@ ARGS_CONFIG = {
     },
     'hpc_conf': {
         'output_dir': (PLAYBOOK_DIR, TORQUE_TEMPLATE_DIR, AUTOFS_FILES_DIR, AUTOFS_FILES_DIR, NFS_FILES_DIR),
-        'template_file': ('hosts.j2', "etc_hosts.j2", "auto.master.j2", "auto.pool.j2", "exports.j2"),
+        'template_file': ('hosts.j2', "etc_hosts.j2", "auto.master.j2", "auto.pool.j2", "exports.j2", "config.j2", "server_name.j2"),
         'config_vars': HPC_CONFIG.fromkeys(('hpc_conf',), HPC_CONFIG.get('hpc_conf'))
-    },
-    'cobbler_conf': {
-        'output_dir': COBBLER_VARS_DIR,
-        'template_file': 'main.yml.j2',
-        'config_vars': HPC_CONFIG.fromkeys(('cobbler_conf',), HPC_CONFIG.get('cobbler_conf'))
-    },
-    'client_conf': {
-        'output_dir': DISTRO_VARS_DIR,
-        'template_file': 'client.yml.j2',
-        'config_vars': HPC_CONFIG.fromkeys(('client_conf',), HPC_CONFIG.get('client_conf'))
-    },
-    'ks_conf': {
-        'output_dir': DISTRO_FILES_DIR,
-        'template_file': 'ks_template.ks.j2',
-        'config_vars': HPC_CONFIG.fromkeys(('ks_conf',), HPC_CONFIG.get('ks_conf'))
     }
 }
 

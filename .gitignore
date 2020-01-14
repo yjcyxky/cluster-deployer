@@ -1,0 +1,4 @@
+.DS_Store
+hpc_config.yml
+**etc_hosts
+playbook/hosts

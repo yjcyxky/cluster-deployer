@@ -1,7 +1,7 @@
 ---
 # Ansible playbook to install cobbler - main.yml
 #
-# Copyright (C) 2016  Mark Einon <mark.einon@gmail.com>
+# Copyright (C) 2016-2019 Jingcheng Yang <yjcyxky@163.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License,
@@ -18,7 +18,6 @@
   hosts: workers
   roles:
     - role: 'deploy_torque'
-      torque_server: "{{ansible_hostname}}"
       torque_type_of_node: 'mom'
       internet_network: 'no'
 

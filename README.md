@@ -33,23 +33,16 @@ ONBOOT=yes
 # Quickstart Guide
 1. 拷贝hpc_config.yml.sample为hpc_config.yml文件
 2. 修改hpc_config.yml文件，依据实际情况填入相应的参数
-3. 运行`deploy_hpc -i deploy_cobbler -c hpc_config.yml`，将会在ansible_ssh_host对应的机器上安装cobbler(注意：要求主机至少有两张网卡，且其中一张与外网连通，另外一张网卡IP地址设置为192.192.192.21)[运行过程中会要求输入安装服务器的账户密码和sudo密码]
-4. 运行`deploy_hpc -i deploy_torque -c hpc_config.yml`将会依据hpc_config.yml文件中指定的集群管理节点和计算节点配置安装torque等集群软件
+3. 运行`deploy_hpc -i deploy_torque -c hpc_config.yml`将会依据hpc_config.yml文件中指定的集群管理节点和计算节点配置安装torque等集群软件
 
 # 软件详解
 1. init_deploy负责将templates目录下的jinja2文件渲染成相关配置文件并拷贝到指定目录
     ansible.cfg.j2 ----> setup_cobbler/playbook/ansible.cfg
-    CentOS-7.ks.j2 ----> setup_cobbler/playbook/roles/add_distro/files   
-    <!--具体命名依据hpc_config.yml中client_conf区块确定-->
-    client.yml.j2 ----> setup_cobbler/clients/{{待定}}   
-    <!--需要依据程序设计而定，即add_distro role需要重写-->
-    main.yml.j2 ----> setup_cobbler/playbook/host_vars/main.yml
     hosts.j2 ----> setup_cobbler/playbook/hosts
 
-2. deploy_hpc负责调用各个ansible模块完成HPC配置工作，共包含5个子命令：deploy_cobbler、get_iso、deploy_torque，每个子命令均可多次调用了
+2. deploy_hpc负责调用各个ansible模块完成HPC配置工作，共包含5个子命令：deploy_infiniband、deploy_torque、deploy_nfs，每个子命令均可多次调用了
 
 # TODO List
 1. 增加NIS配置模块
-2. 增加Infiniband驱动安装模块(通过向Torque中增加YUM库来实现，需要提前配置torque yum repo)
-3. 增加NFS+Autofs配置模块
-4. 增加账户模块+免密登录
+2. 增加 Infiniband 配置模块
+3. 增加账户模块+免密登录
