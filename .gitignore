@@ -2,3 +2,4 @@
 hpc_config.yml
 **etc_hosts
 playbook/hosts
+playbook/cache/facts.json
