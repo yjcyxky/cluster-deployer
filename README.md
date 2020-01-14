@@ -1,8 +1,3 @@
-# 软件信息
-Version: v1.0
-作者: JingchengYang
-邮箱: yjcyxky@163.com
-
 # 安装指南
 ## 依赖安装
 1. 安装Python3
@@ -46,3 +41,8 @@ ONBOOT=yes
 1. 增加NIS配置模块
 2. 增加 Infiniband 配置模块
 3. 增加账户模块+免密登录
+
+# 软件信息
+> 作者: JingchengYang
+>
+> 邮箱: yjcyxky@163.com

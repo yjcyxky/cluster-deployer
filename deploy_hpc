@@ -2,7 +2,7 @@
 #
 # Script to configure cobbler using ansible
 #
-# Copyright (C) 2016  JingchengYang <yjcyxky@163.com>
+# Copyright (C) 2016-2020 Jingcheng Yang <yjcyxky@163.com>
 #
 
 show_help(){
