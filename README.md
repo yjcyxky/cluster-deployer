@@ -40,9 +40,9 @@ ONBOOT=yes
 2. deploy_hpc负责调用各个ansible模块完成HPC配置工作，共包含5个子命令：deploy_infiniband、deploy_torque、deploy_nfs，每个子命令均可多次调用了
 
 # TODO List
-1. 增加NIS配置模块
+1. 增加 NIS 配置模块
 2. 增加 Infiniband 配置模块
-3. 增加账户模块+免密登录
+3. 增加 /etc/fstab 与 /exports 配置模块
 
 # 软件信息
 > 作者: JingchengYang
