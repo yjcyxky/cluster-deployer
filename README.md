@@ -29,7 +29,8 @@ ONBOOT=yes
 # Quickstart Guide
 1. 拷贝hpc_config.yml.sample为hpc_config.yml文件
 2. 修改hpc_config.yml文件，依据实际情况填入相应的参数
-3. 运行`deploy_hpc -i deploy_torque -c hpc_config.yml`将会依据hpc_config.yml文件中指定的集群管理节点和计算节点配置安装torque等集群软件
+3. 运行`cluster-deployer init -c hpc_config.yml`将会依据hpc_config.yml文件中指定的集群管理节点和计算节点配置生成集群配置文件
+4. 运行`cluster-deployer deploy [torque|nfs]`部署集群
 
 # 软件详解
 1. init_deploy负责将templates目录下的jinja2文件渲染成相关配置文件并拷贝到指定目录

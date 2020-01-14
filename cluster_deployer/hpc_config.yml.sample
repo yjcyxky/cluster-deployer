@@ -29,7 +29,7 @@ hpc_conf:
     infiniband_ip: 10.10.10.10
     port: 22
     user: supersan
-    pools: [ "home", "anchordx-opt", "Scratch", "Src_Data1" ]
+    pools: [ "home" ]
   manager:
     node_name: "anchordx"
     ip: "192.192.192.10"
