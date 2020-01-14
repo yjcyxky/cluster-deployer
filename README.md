@@ -43,6 +43,7 @@ ONBOOT=yes
 1. 增加 NIS 配置模块
 2. 增加 Infiniband 配置模块
 3. 增加 /etc/fstab 与 /exports 配置模块
+4. 增加 environment-module 与 cluster-utils 配置模块
 
 # 软件信息
 > 作者: JingchengYang
