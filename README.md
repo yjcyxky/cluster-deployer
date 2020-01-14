@@ -1,8 +1,9 @@
 # 安装指南
 ## 依赖安装
-1. 安装Python3
-2. 安装Python3依赖库：pyyaml、jinja2
-3. 安装ansible
+1. 安装 Python3
+2. 安装 Python3 依赖库：pyyaml、jinja2
+3. 安装 ansible
+4. 安装 sshpass
 
 ## 其它配置
 1. 网络配置：至少需要两张网卡

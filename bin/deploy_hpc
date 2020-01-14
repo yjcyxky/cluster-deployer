@@ -9,7 +9,7 @@ show_help(){
 cat << EOF
 usage: $(echo $0) [-h] [-i <command>] [-k]
        -h show help document
-       -i command name, it can be add_distro, deploy_cobbler, deploy_torque, deploy_nfs
+       -i command name, it can be deploy_torque, deploy_nfs
        -k skip the check_prerequisite
 EOF
 }
@@ -55,18 +55,6 @@ check_arg() {
     fi
 }
 
-check_config() {
-    config_file="hpc_config.yml"
-    # 配置文件是否存在
-    if [ ! -f "$config_file" ];then
-        echo "未找到配置文件: $config_file"
-        echo "请从hpc_config.yml.sample拷贝一份副本，重命名为hpc_config.yml，并依据实际情况修改相应参数，而后重试"
-        exit 1
-    else
-        python3 ./init_deploy $config_file
-    fi
-}
-
 check_env() {
     if [ -z `which ansible-playbook` ];then
         echo "请安装ansible"
@@ -84,10 +72,10 @@ check_prerequisite() {
     read yesorno
     case "$yesorno" in
         [yY]|[Yy][eE][sS])
-            pass
+            printf ""
             ;;              
         [nN]|[Nn][oO])
-            echo "请先遵照安装指南完成相应准备工作"
+            printf "\n请先遵照'安装指南/README.md'完成相应准备工作\n"
             exit 1
             ;;
         *)
@@ -99,29 +87,28 @@ check_prerequisite() {
 
 main() {
 
-    array=("add_distro" "deploy_torque" "deploy_cobbler" "deploy_nfs")
+    array=("deploy_torque" "deploy_nfs")
 
     containsElement "$install_command" "${array[@]}"
     if [ $? == 0 ]; then
         echo "执行命令：$install_command"
-        cd playbook
+        BASE_DIR=$(dirname $0)
+        cd "$BASE_DIR/../cluster_deployer/playbook"
         ansible-playbook "$install_command".yml
     else
-        echo "命令${install_command}不存在，请指定add_distro、deploy_torque、deploy_cobbler之一"
+        echo "命令${install_command}不存在，请指定deploy_torque、deploy_nfs之一"
         exit 1
     fi
 }
 
 # 检测输入参数
 check_arg "$install_command" "-i"
-check_config
 check_env
 if [ -z "$skip_check" ];then
     check_prerequisite "集群所有节点是否已经安装操作系统？"
     check_prerequisite "集群业务网络是否连接正常？"
     check_prerequisite "集群所有节点是否已经安装Infiniband驱动，并测试IB网络正常？"
     check_prerequisite "所有节点是否已经安装NIS，并配置成功？"
-    check_prerequisite "所有账户是否已经实现免密登录？"
     check_prerequisite "所有卷是否已经格式化好并挂载在存储节点相应位置？(包括/etc/fstab文件与/exports目录)"
     check_prerequisite "是否已经修改hpc_config.yml文件保持配置与集群实际情况一致？"
 fi

@@ -1,5 +1,9 @@
 .DS_Store
-hpc_config.yml
-**etc_hosts
-playbook/hosts
-playbook/cache/facts.json
+cluster_deployer/playbook/roles/deploy_nfs/files/autofs/*
+cluster_deployer/playbook/roles/deploy_torque/templates/config
+cluster_deployer/playbook/hosts
+cluster_deployer/playbook/roles/deploy_torque/templates/server_name
+cluster_deployer/playbook/roles/deploy_torque/templates/etc_hosts
+cluster_deployer/playbook/roles/deploy_nfs/files/exports
+cluster_deployer/playbook/ansible.cfg
+__pycache__

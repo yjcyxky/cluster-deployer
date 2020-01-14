@@ -1,6 +1,3 @@
-[cobblers]
-cobbler1 ansible_ssh_host={{ hpc_conf.cobbler.ansible_ssh_host }} ansible_ssh_port={{ hpc_conf.cobbler.ansible_ssh_port }} ansible_ssh_user={{ hpc_conf.cobbler.ansible_ssh_user }}
-
 [managers]
 {#增加-可以控制去除空白行-#}
 {{ hpc_conf.manager.node_name }} ansible_ssh_host={{ hpc_conf.manager.ip }} ansible_ssh_port={{ hpc_conf.manager.port }} ansible_ssh_user={{ hpc_conf.manager.user }} infiniband_ip={{ hpc_conf.manager.infiniband_ip }}
