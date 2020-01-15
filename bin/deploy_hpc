@@ -5,11 +5,13 @@
 # Copyright (C) 2016-2020 Jingcheng Yang <yjcyxky@163.com>
 #
 
+array=("deploy_torque" "deploy_nfs" "deploy_infiniband" "deploy_fstab" "deploy_packages" "deploy_nis")
+
 show_help(){
 cat << EOF
 usage: $(echo $0) [-h] [-i <command>] [-k]
        -h show help document
-       -i command name, it can be deploy_torque, deploy_nfs
+       -i command name, it can be one of ${array[@]}.
        -k skip the check_prerequisite
 EOF
 }
@@ -86,17 +88,14 @@ check_prerequisite() {
 }
 
 main() {
-
-    array=("deploy_torque" "deploy_nfs" "deploy_infiniband" "deploy_fstab" "deploy_packages" "deploy_nis")
-
     containsElement "$install_command" "${array[@]}"
     if [ $? == 0 ]; then
         echo "执行命令：$install_command"
         BASE_DIR=$(dirname $0)
         cd "$BASE_DIR/../cluster_deployer/playbook"
-        ansible-playbook "$install_command".yml
+        ansible-playbook "$install_command".yml --ask-become-pass
     else
-        echo "命令${install_command}不存在，请指定deploy_torque、deploy_nfs之一"
+        echo "命令${install_command}不存在，请指定 ${array[@]} 之一"
         exit 1
     fi
 }
