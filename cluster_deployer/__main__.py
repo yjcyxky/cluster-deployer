@@ -229,7 +229,7 @@ def run_cli():
 
 
 @run_cli.command(help="Deploy HPC Cluster.")
-@click.argument("command", type=click.Choice(["torque", "nfs"]))
+@click.argument("command", type=click.Choice(["torque", "nfs", "infiniband", "fstab", "packages", "nis"]))
 @click.option("--skip", "-s", help="Skip the check_prerequisite", is_flag=True)
 @click.option("--debug", "-d", help="Show debug information.", is_flag=True)
 def deploy(command, skip, debug):
