@@ -12,6 +12,8 @@ cluster_deployer/playbook/roles/deploy_nis/defaults/main.yml
 cluster_deployer/playbook/roles/deploy_infiniband/defaults/main.yml
 cluster_deployer/playbook/roles/deploy_infiniband/files/infiniband.repo
 cluster_deployer/playbook/roles/deploy_packages/defaults/main.yml
-cluster_deployer/playbook/roles/deploy_packages/files/packages.repo
+cluster_deployer/playbook/roles/deploy_packages/templates/packages.repo
+cluster_deployer/playbook/roles/deploy_packages/files/bashrc
 cluster_deployer/playbook/ansible.cfg
+vagrant/.vagrant
 __pycache__

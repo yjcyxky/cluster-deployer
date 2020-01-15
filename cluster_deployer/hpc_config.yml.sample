@@ -3,11 +3,15 @@
 # --------------------------
 # 描述：集群自动化部署配置文件，用于定义集群部署过程中所需要的配置信息；
 # 注意：使用此软件需要所有节点已经完成硬件部署，部署顺序为:
-#      deploy_infiniband(部署Infiniband驱动)
-#      deploy_torque(部署集群管理软件)
-#      deploy_nfs(部署NFS服务)
-#      deploy_nis(部署统一账户系统)
-#      add_users(添加账户)
+
+# 0. deploy_infiniband(部署 Infiniband 驱动)
+
+# Notice: 确认存储卷正常工作后，将卷对应的路径填入配置文件中，而后务必在此运行 cluster-deployer clean && cluster-deployer init
+# 1. deploy_fstab(务必先部署 Infiniban 驱动，同时确保 multipath 正常工作)
+# 2. deploy_torque(部署集群管理软件)
+# 3. deploy_nfs(部署 NFS 服务)
+# 4. deploy_nis(部署统一账户系统)
+# 5. deploy_packages(安装 environment-modules、cluster-utils 等)
 
 # Author：YJC
 # Email：yjcyxky@163.com
@@ -24,58 +28,49 @@ ansible:
 hpc_conf:
   # 以下区块需要依据集群变更情况进行修改
   packages:
-    packages: []
+    # For #packages#packages.repo.j2
     yum_repo: "http://download.fedoraproject.org/pub/epel/7/SRPMS"
     gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"
+    # For #packages#bashrc.j2
+    modulepath: "/opt/local/cluster-utils/share/modulefiles"
+    path: "/opt/local/cluster-utils/conda/bin:/opt/local/cluster-utils/bin"
+    # For #packages#main.yml.j2
     enable_cluster_utils: True
-    cluster_utils_root: "/opt/local/"
+    # 末尾不能带有反斜杠
+    cluster_utils_root: "/opt/local"
     cluster_utils_repo: "https://github.com/go-choppy/cluster-utils"
     enable_module: True
-    modulepath: ""
-    path: ""
+    packages: ["environment-modules", "jq"]
+    conda_url: "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda2-latest-Linux-x86_64.sh"
   infiniband:
     packages: []
     yum_repo: "http://download.fedoraproject.org/pub/epel/7/SRPMS"
     gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"
   nis:
     nis_domain: fgci.csc.fi
-    nis_server_address: 192.192.192.10
+    nis_server_address: 127.0.0.1
     nis_secure_net: "255.255.0.0 192.192.0.0"
   storage: 
     node_name: "anchordx"
-    ip: 192.192.192.10
+    ip: 127.0.0.1
     infiniband_ip: 10.10.10.10
-    port: 22
-    user: supersan
+    port: 2222
+    user: vagrant
     volumes: [ "/dev/mapper/XXX" ]
     pools: [ "home" ]
   manager:
     node_name: "anchordx"
-    ip: "192.192.192.10"
+    ip: "127.0.0.1"
     infiniband_ip: "10.10.10.10"
-    port: 22
-    user: supersan
+    port: 2222
+    user: vagrant
   workers: [
     {
       "node_name": "anchordx01",
-      "ip": "192.192.192.11",
+      "ip": "127.0.0.2",
       "infiniband_ip": "10.10.10.11",
-      "port": 22,
-      "user": supersan
-    },
-    {
-      "node_name": "anchordx02",
-      "ip": "192.192.192.12",
-      "infiniband_ip": "10.10.10.12",
-      "port": 22,
-      "user": supersan
-    },
-    {
-      "node_name": "anchordx03",
-      "ip": "192.192.192.13",
-      "infiniband_ip": "10.10.10.13",
-      "port": 22,
-      "user": supersan
+      "port": 2222,
+      "user": vagrant
     }
   ]
 

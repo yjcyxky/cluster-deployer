@@ -14,16 +14,18 @@
 #
 
 # 必须先安装管理节点再安装计算节点
-- name: install nis to managers
+- name: Install nis to managers
   hosts: managers
   roles:
     - role: 'deploy_nis'
       nis_server: True
+  become: yes
 
-- name: install nis to workers
+- name: Install nis to workers
   hosts: workers
   roles:
     - role: 'deploy_nis'
       nis_server: False
+  become: yes
 
 ...

@@ -1,4 +1,4 @@
-# Bind mode
+# Don't edit manually
 {% for volume, pool in hpc_conf.storage.volumes|zip(hpc_conf.storage.pools) -%}
 {{ volume}} /{{ pool }} xfs noauto,x-systemd.automount,x-systemd.device-timeout=10,rw,suid,exec,nouser,async 0 0
 /{{ pool }} /exports/{{ pool | replace('/', '_') }} none defaults,bind 0 0

@@ -118,6 +118,7 @@ def set_config(hpc_config_file=None):
     INFINIBAND_DEFAULT_DIR = os.path.join(ROLE_DIR, "deploy_infiniband", "defaults")
 
     PACKAGES_FILES_DIR = os.path.join(ROLE_DIR, "deploy_packages", "files")
+    PACKAGES_TEMPLATE_DIR = os.path.join(ROLE_DIR, "deploy_packages", "templates")
     PACKAGES_DEFAULT_DIR = os.path.join(ROLE_DIR, "deploy_packages", "defaults")
 
     AUTOFS_FILES_DIR = os.path.join(NFS_FILES_DIR, "autofs")
@@ -134,11 +135,11 @@ def set_config(hpc_config_file=None):
             "output_dir": (PLAYBOOK_DIR, TORQUE_TEMPLATE_DIR, AUTOFS_FILES_DIR, AUTOFS_FILES_DIR,
                            NFS_FILES_DIR, TORQUE_TEMPLATE_DIR, TORQUE_TEMPLATE_DIR, FSTAB_FILES_DIR,
                            FSTAB_FILES_DIR, NIS_DEFAULT_DIR, INFINIBAND_DEFAULT_DIR, INFINIBAND_FILES_DIR,
-                           PACKAGES_DEFAULT_DIR, PACKAGES_FILES_DIR),
+                           PACKAGES_DEFAULT_DIR, PACKAGES_TEMPLATE_DIR, PACKAGES_FILES_DIR),
             "template_file": ("hosts.j2", "etc_hosts.j2", "auto.master.j2", "auto.pool.j2",
                               "exports.j2", "config.j2", "server_name.j2", "fstab.j2",
                               "volumes.j2", "#nis#main.yml.j2", "#infiniband#main.yml.j2", "#infiniband#infiniband.repo.j2",
-                              "#packages#main.yml.j2", "#packages#packages.repo.j2"),
+                              "#packages#main.yml.j2", "#packages#packages.repo.j2", "#packages#bashrc.j2"),
             "config_vars": HPC_CONFIG.fromkeys(("hpc_conf",), HPC_CONFIG.get("hpc_conf"))
         }
     }
@@ -151,7 +152,7 @@ def get_file_path(dir, file_name):
 
 
 def remove_suffix(path, suffix=".j2"):
-    return path.replace(suffix, "")
+    return re.sub(r"#.*#", "", path.replace(suffix, ""))
 
 
 def replace_special_str(path, prefix=r"auto\..*$", repl="auto.*"):

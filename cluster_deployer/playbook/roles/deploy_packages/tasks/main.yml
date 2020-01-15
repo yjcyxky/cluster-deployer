@@ -2,16 +2,53 @@
   template: src=packages.repo dest=/etc/yum.repos.d/packages.repo
   become: yes
 
-- name: Install needful packages
-  yum: name={{ item }} state=installed
-  with_items: "{{ packages }}"
+- name: Install epel-release
+  yum: name="epel-release" state=installed
   become: yes
+
+- name: Install git
+  yum: name="git" state=installed
+  become: yes
+
+- name: Install needful packages
+  yum: name={{ packages }} state=installed
+  become: yes
+
+- name: Remove cluster-utils directory
+  file:
+    path: "{{ cluster_utils_root }}/cluster-utils"
+    state: absent
+  become: yes
+  when: type_of_node == 'manager' and enable_cluster_utils|bool
 
 - name: Deploy cluster-utils
   git:
     repo: "{{ cluster_utils_repo }}"
     dest: "{{ cluster_utils_root }}/cluster-utils"
-  when: type_of_node == 'manager' and enable_cluster_utils
+  become: yes
+  when: type_of_node == 'manager' and enable_cluster_utils|bool
+
+- name: Download miniconda package
+  get_url:
+    url: "{{ conda_url }}"
+    dest: /tmp/
+  when: type_of_node == 'manager' and enable_cluster_utils|bool
+
+- name: Install conda package
+  shell: bash /tmp/Miniconda*-latest-Linux-x86_64.sh -b -p "{{ cluster_utils_root }}/cluster-utils/conda" -f -u
+  become: yes
+  when: type_of_node == 'manager' and enable_cluster_utils|bool
+
+- name: Change attributes of directory 
+  file:
+    path: "{{ cluster_utils_root }}"
+    state: directory
+    recurse: yes
+    owner: softwares
+    group: softwares
+    mode: "0755"
+  when: type_of_node == 'manager' and enable_cluster_utils|bool
+  become: yes
 
 - name: Insert/Update configuration into bashrc
   blockinfile:

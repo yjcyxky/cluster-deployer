@@ -1,7 +1,7 @@
 ---
 # tasks file for ansible-role-nis
 
-- name: template in yp.conf on non-servers
+- name: Template in yp.conf on non-servers
   template:
     src: yp.conf.j2
     dest: /etc/yp.conf
@@ -16,7 +16,7 @@
 - name: Fix SELinux context on /etc/shadow
   command: "/usr/bin/chcon -h system_u:object_r:shadow_t:s0 /etc/shadow"
 
-- name: install nis server packages
+- name: Install nis server packages
   package:
     name: "{{ item }}"
     state: present
@@ -27,7 +27,7 @@
     - restart ypbind
     - restart ypserv
 
-- name: install nis common packages
+- name: Install nis common packages
   package:
     name: "{{ item }}"
     state: present
@@ -36,7 +36,7 @@
     - restart ypbind
     - restart ypserv
 
-- name : template in nsswitch - conditionals inside template
+- name : Template in nsswitch - conditionals inside template
   template:
     src: nsswitch.conf.j2
     dest: /etc/nsswitch.conf
@@ -45,7 +45,7 @@
     - restart rpcbind
     - restart ypbind
 
-- name : template in /var/yp/securenets
+- name : Template in /var/yp/securenets
   template:
     src: securenets.j2
     dest: /var/yp/securenets
@@ -55,7 +55,7 @@
     - restart ypserv
 
 # TODO: If one changes nis_domain variable then sysconfig/network needs to be cleaned up manually
-- name: add NISDOMAIN to sysconfig/network
+- name: Add NISDOMAIN to sysconfig/network
   lineinfile:
     dest: /etc/sysconfig/network
     regexp: 'NISDOMAIN=.*'
@@ -71,7 +71,7 @@
     - restart ypbind
     - restart ypserv
 
-- name : template in yp Make cronjob
+- name : Template in yp Make cronjob
   template:
     src: yp.cron.j2
     dest: /etc/cron.hourly/yp.cron
@@ -81,7 +81,7 @@
     backup: no
   when: nis_server|bool
 
-- name: enable and start rhel-domainname
+- name: Enable and start rhel-domainname
   service:
     name: rhel-domainname
     enabled: yes
@@ -110,7 +110,7 @@
     - ( ansible_virtualization_type != "docker" and nis_manage_networkmanager|bool )
     - reg_nm.stat.exists
 
-- name: enable and start yp server daemons
+- name: Enable and start yp server daemons
   service:
     name: "{{ item }}"
     enabled: yes
@@ -133,14 +133,14 @@
     group: root
   when: not nis_server|bool
 
-- name: enable and start ypbind
+- name: Enable and start ypbind
   service:
     name: ypbind
     enabled: yes
     state: started
   when: not nis_server|bool
 
-- name: enable and start nscd
+- name: Enable and start nscd
   service:
     name: nscd
     enabled: "{{ nis_nscd_enabled }}"
