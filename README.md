@@ -89,13 +89,22 @@ cluster-deployer deploy --help
 ```
 
 # 软件详解
-1. `cluster-deployer init` 负责将templates目录下的jinja2文件渲染成相关配置文件并拷贝到指定目录
-
+## `cluster-deployer init` 命令
+负责将templates目录下的jinja2文件渲染成相关配置文件并拷贝到指定目录
 
     ansible.cfg.j2 ----> setup_cobbler/playbook/ansible.cfg
     hosts.j2 ----> setup_cobbler/playbook/hosts
 
-2. `cluster-deployer deploy [torque|nfs|infiniband|packages|nis|fstab]` 负责调用各个部署模块完成HPC配置工作
+## `cluster-deployer deploy` 命令
+负责调用各个部署模块完成HPC配置工作
+
+## 当前支持的模块
+1. 部署集群调度软件
+2. 部署 NFS
+3. 部署 Infiniband 驱动
+4. 部署 Module + 集群管理附加软件包 cluster-utils
+5. 部署集群认证软件 NIS
+6. 配置与挂载存储卷并发布至计算节点
 
 # TODO List
 暂无
