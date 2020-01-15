@@ -12,7 +12,8 @@ import argparse
 import copy
 import click
 
-TEMPLATE_DIR = "."
+BASE_DIR = os.path.dirname(__file__)
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
 
 def parse_hpc_config(file_name):
@@ -24,6 +25,7 @@ def parse_hpc_config(file_name):
 
     return hpc_config
 
+
 def render(config_vars, template_file, template_dir="."):
     jinja2.filters.FILTERS["zip"] = zip
     template_loader = jinja2.FileSystemLoader(searchpath=template_dir)
@@ -34,6 +36,7 @@ def render(config_vars, template_file, template_dir="."):
     template = template_env.get_template(template_file)
     rendered_text = template.render(config_vars)
     return rendered_text
+
 
 def check_hpc_conf(hpc_conf):
     manager = hpc_conf.get("manager")
@@ -61,6 +64,7 @@ def check_hpc_conf(hpc_conf):
         if len(ip_addr) > len(set(ip_addr)) or len(ib_ip_addr) - 1 > len(set(ib_ip_addr)):
             print("manager或storage与workers中IP地址有重复，请重新设置")
             sys.exit(1)
+
 
 def gen_config_file(config_vars, template_file, output_dir):
     def conf_generator(config_vars, template_file, output_dir):
@@ -97,14 +101,10 @@ def gen_config_file(config_vars, template_file, output_dir):
 
 
 def set_config(hpc_config_file=None):
-    BASE_DIR = os.path.dirname(__file__)
-
     if hpc_config_file:
         HPC_CONFIG_FILE = hpc_config_file
     else:
         HPC_CONFIG_FILE = os.path.join(BASE_DIR, "hpc_config.yml.sample")
-
-    TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
     HPC_CONFIG = parse_hpc_config(HPC_CONFIG_FILE)
     PLAYBOOK_DIR = os.path.join(BASE_DIR, "playbook")
@@ -144,7 +144,7 @@ def set_config(hpc_config_file=None):
         }
     }
 
-    return TEMPLATE_DIR, HPC_CONFIG, ARGS_CONFIG
+    return HPC_CONFIG, ARGS_CONFIG
 
 
 def get_file_path(dir, file_name):
@@ -181,10 +181,13 @@ def clean(dry_run):
     import json
     import subprocess
 
-    _, _, ARGS_CONFIG = set_config()
+    _, ARGS_CONFIG = set_config()
     clean_files = [replace_special_str(remove_suffix(get_file_path(dir, file)))
                     for item in ARGS_CONFIG.values()
                         for dir, file in zip(item.get("output_dir"), item.get("template_file"))]
+    cache_dir = os.path.join(BASE_DIR, "playbook", "cache", "facts.json", "*")
+    clean_files.append(cache_dir)
+
     uniq_clean_files = set(clean_files)
 
     if dry_run:
@@ -208,8 +211,7 @@ def init_cli():
 @init_cli.command(help="Initialize the config for HPC cluster.")
 @click.option("-c", help="Configuration file path.", type=str, default=None)
 def init(c):
-    global TEMPLATE_DIR
-    TEMPLATE_DIR, HPC_CONFIG, ARGS_CONFIG = set_config(c)
+    HPC_CONFIG, ARGS_CONFIG = set_config(c)
 
     # generate ansible configure file
     # 校验HPC配置信息
