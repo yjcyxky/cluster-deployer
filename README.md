@@ -1,17 +1,13 @@
-# 安装指南
-## 依赖安装
-1. 安装 Python3
-2. 安装 Python3 依赖库：pyyaml、jinja2
-3. 安装 ansible
-4. 安装 sshpass
+# 快速指南
+## 系统依赖
+网络配置：至少需要两张网卡，无线网卡/第一张有线网卡连接外网，并且需要设置其为**默认路由**
 
-## 其它配置
-1. 网络配置：至少需要两张网卡
-无线网卡/第一张有线网卡连接外网，并且需要设置其为**默认路由**
 ```
 DEFROUTE=yes
 ```
+
 另外一张网卡为有线网卡，网卡配置如下：
+
 ```
 TYPE=Ethernet
 BOOTPROTO=static
@@ -26,24 +22,83 @@ DEVICE=enp1s0f0
 ONBOOT=yes
 ```
 
-# Quickstart Guide
-1. 拷贝hpc_config.yml.sample为hpc_config.yml文件
-2. 修改hpc_config.yml文件，依据实际情况填入相应的参数
-3. 运行`cluster-deployer init -c hpc_config.yml`将会依据hpc_config.yml文件中指定的集群管理节点和计算节点配置生成集群配置文件
-4. 运行`cluster-deployer deploy [torque|nfs]`部署集群
+## 下载 cluster-deployer
+
+```
+# 假定：下载 Cluster Deployer 至用户 Home 目录
+git clone https://github.com/go-choppy/cluster-deployer
+```
+
+## 安装依赖库
+
+```
+# 安装前置依赖
+yum install sshpass
+
+# 使用 conda
+conda create -n cluster-deployer python=3.7
+
+## 激活环境
+conda activate cluster-deployer
+
+## 安装依赖
+pip3 install -r ~/cluster-deployer/requirements
+
+# 使用 virtualenv
+virtualenv .env
+
+## 激活环境
+source .env/bin/activate
+
+## 安装依赖
+pip3 install -r ~/cluster-deployer/requirements
+```
+
+## 配置环境变量
+
+```
+echo "export PATH=~/cluster-deployer/bin:$PATH" >> ~/.bashrc
+source ~/.bashrc
+```
+
+## 修改配置文件
+
+```
+# 拷贝hpc_config.yml.sample为hpc_config.yml文件
+cp cluster-deployer/cluster_deployer/hpc_config.yml.sample ~/hpc_config.yml
+
+# 修改 hpc_config.yml 文件，依据实际情况填入相应的参数
+```
+
+## 初始化配置
+
+```
+# 运行`cluster-deployer init -c hpc_config.yml`将会依据hpc_config.yml文件中指定的集群管理节点和计算节点配置生成集群配置文件
+
+cluster-deployer init -c ~/hpc_config.yml
+```
+
+## 部署模块
+运行部署命令；注意运行的先后顺序，详情参考[HPC Configuration](./cluster_deployer/hpc_config.yml.sample)
+
+```
+cluster-deployer deploy [torque|nfs|infiniband|packages|nis|fstab]
+
+# 查看命令帮助
+cluster-deployer deploy --help
+```
 
 # 软件详解
-1. init_deploy负责将templates目录下的jinja2文件渲染成相关配置文件并拷贝到指定目录
+1. `cluster-deployer init` 负责将templates目录下的jinja2文件渲染成相关配置文件并拷贝到指定目录
+
+
     ansible.cfg.j2 ----> setup_cobbler/playbook/ansible.cfg
     hosts.j2 ----> setup_cobbler/playbook/hosts
 
-2. deploy_hpc负责调用各个ansible模块完成HPC配置工作，共包含5个子命令：deploy_infiniband、deploy_torque、deploy_nfs，每个子命令均可多次调用了
+2. `cluster-deployer deploy [torque|nfs|infiniband|packages|nis|fstab]` 负责调用各个部署模块完成HPC配置工作
 
 # TODO List
-1. 增加 NIS 配置模块
-2. 增加 Infiniband 配置模块
-3. 增加 /etc/fstab 与 /exports 配置模块
-4. 增加 environment-module 与 cluster-utils 配置模块
+暂无
 
 # 软件信息
 > 作者: JingchengYang
