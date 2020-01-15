@@ -1,0 +1,14 @@
+- name: Make directories (/exports/*)
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  with_items: "{{ lookup('file', 'volumes') | list }}"
+  become: yes
+
+- name: Insert/Update configuration using a local file and validate it
+  blockinfile:
+    block: "{{ lookup('file', 'fstab') }}"
+    dest: /etc/fstab
+    validate: mount -a
+  become: yes

@@ -1,0 +1,4 @@
+{% for pool in hpc_conf.storage.pools -%}
+/{{ pool }}
+/exports/{{ pool | replace('/', '_') }}
+{%- endfor -%}

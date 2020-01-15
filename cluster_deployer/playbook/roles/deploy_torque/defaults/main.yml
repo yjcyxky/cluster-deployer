@@ -23,9 +23,10 @@ torque_manager_packages:
   - "munge-0.5.11-1.el7.x86_64.rpm"
   - "hwloc-1.11.2-1.el7.x86_64.rpm"
   - "tokyocabinet-1.4.48-3.el7.x86_64.rpm"
-  - "yp-tools-2.14-3.el7.x86_64.rpm"
-  - "ypbind-1.37.1-7.el7.x86_64.rpm"
-  - "ypserv-2.31-9.el7_3.x86_64.rpm"
+# Please see deploy_nis for more details
+#  - "yp-tools-2.14-3.el7.x86_64.rpm"
+#  - "ypbind-1.37.1-7.el7.x86_64.rpm"
+#  - "ypserv-2.31-9.el7_3.x86_64.rpm"
 
 torque_worker_packages:
   - "torque-6.0.2-1.adaptive.el7.centos.x86_64.rpm"
@@ -34,8 +35,8 @@ torque_worker_packages:
   - "munge-0.5.11-1.el7.x86_64.rpm"
   - "hwloc-1.11.2-1.el7.x86_64.rpm"
   - "tokyocabinet-1.4.48-3.el7.x86_64.rpm"
-  - "yp-tools-2.14-3.el7.x86_64.rpm"
-  - "ypbind-1.37.1-7.el7.x86_64.rpm"
+#  - "yp-tools-2.14-3.el7.x86_64.rpm"
+#  - "ypbind-1.37.1-7.el7.x86_64.rpm"
 
 torque_dependencies:
   - libtool

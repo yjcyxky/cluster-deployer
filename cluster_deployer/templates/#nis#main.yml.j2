@@ -1,0 +1,27 @@
+---
+# defaults file for ansible-role-nis
+
+nis_enabled: True
+nis_domain: "{{ hpc_conf.nis.nis_domain }}"
+nis_server_address: "{{ hpc_conf.nis.nis_server_address }}"
+nis_secure_net: "{{ hpc_conf.nis.nis_secure_net }}"
+nis_server: False
+nis_server_packages:
+ - ypserv
+nis_server_daemons:
+ - ypserv
+ - yppasswdd
+nis_packages:
+ - ypbind
+ - yp-tools
+ - nscd
+
+nis_manage_nsswitch: True
+nis_manage_nscd: True
+nis_nscd_enabled: "yes"
+nis_nscd_state: "started"
+nis_manage_networkmanager: True
+nis_nm_enabled: "no"
+nis_nm_state: "stopped"
+nis_initialize: True
+nis_ypbind_timeout: 180

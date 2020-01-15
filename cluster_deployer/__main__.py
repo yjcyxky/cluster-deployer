@@ -25,6 +25,7 @@ def parse_hpc_config(file_name):
     return hpc_config
 
 def render(config_vars, template_file, template_dir="."):
+    jinja2.filters.FILTERS["zip"] = zip
     template_loader = jinja2.FileSystemLoader(searchpath=template_dir)
     template_env = jinja2.Environment(loader=template_loader)
     if not os.path.isfile(os.path.join(template_dir, template_file)):
@@ -79,6 +80,7 @@ def gen_config_file(config_vars, template_file, output_dir):
 
         if re.search("[a-zA-Z0-9\.\-_]+\.j2", template_file):
             output_file = template_file[:-3]
+            output_file = re.sub(r"#.*#", "", output_file)
             with open(os.path.join(output_dir, output_file), "w") as f:
                 f.write(render(config_vars, template_file, TEMPLATE_DIR))
             return True
@@ -108,6 +110,8 @@ def set_config(hpc_config_file=None):
     PLAYBOOK_DIR = os.path.join(BASE_DIR, "playbook")
     ROLE_DIR = os.path.join(BASE_DIR, "playbook", "roles")
     NFS_FILES_DIR = os.path.join(ROLE_DIR, "deploy_nfs", "files")
+    FSTAB_FILES_DIR = os.path.join(ROLE_DIR, "deploy_fstab", "files")
+    NIS_DEFAULT_DIR = os.path.join(ROLE_DIR, "deploy_nis", "defaults")
     AUTOFS_FILES_DIR = os.path.join(NFS_FILES_DIR, "autofs")
     TORQUE_TEMPLATE_DIR = os.path.join(ROLE_DIR, "deploy_torque", "templates")
 
@@ -119,8 +123,12 @@ def set_config(hpc_config_file=None):
             "config_vars": HPC_CONFIG.fromkeys(("ansible",), HPC_CONFIG.get("ansible"))
         },
         "hpc_conf": {
-            "output_dir": (PLAYBOOK_DIR, TORQUE_TEMPLATE_DIR, AUTOFS_FILES_DIR, AUTOFS_FILES_DIR, NFS_FILES_DIR, TORQUE_TEMPLATE_DIR, TORQUE_TEMPLATE_DIR),
-            "template_file": ("hosts.j2", "etc_hosts.j2", "auto.master.j2", "auto.pool.j2", "exports.j2", "config.j2", "server_name.j2"),
+            "output_dir": (PLAYBOOK_DIR, TORQUE_TEMPLATE_DIR, AUTOFS_FILES_DIR, AUTOFS_FILES_DIR,
+                           NFS_FILES_DIR, TORQUE_TEMPLATE_DIR, TORQUE_TEMPLATE_DIR, FSTAB_FILES_DIR,
+                           FSTAB_FILES_DIR, NIS_DEFAULT_DIR),
+            "template_file": ("hosts.j2", "etc_hosts.j2", "auto.master.j2", "auto.pool.j2",
+                              "exports.j2", "config.j2", "server_name.j2", "fstab.j2",
+                              "volumes.j2", "#nis#main.yml.j2"),
             "config_vars": HPC_CONFIG.fromkeys(("hpc_conf",), HPC_CONFIG.get("hpc_conf"))
         }
     }

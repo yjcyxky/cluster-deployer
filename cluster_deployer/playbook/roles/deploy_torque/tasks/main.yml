@@ -9,7 +9,7 @@
   - name: install dependencies for torque cluster
     yum: name={{ item }} state=installed
     with_items: "{{torque_dependencies}}"
-    become: True
+    become: yes
     when: internet_network == 'yes'
 
   - name: include {{torque_type_of_node}}.yml

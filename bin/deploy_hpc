@@ -94,7 +94,7 @@ main() {
         echo "执行命令：$install_command"
         BASE_DIR=$(dirname $0)
         cd "$BASE_DIR/../cluster_deployer/playbook"
-        ansible-playbook "$install_command".yml
+        ansible-playbook "$install_command".yml --ask-become-pass
     else
         echo "命令${install_command}不存在，请指定deploy_torque、deploy_nfs之一"
         exit 1

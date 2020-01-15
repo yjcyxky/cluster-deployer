@@ -1,9 +1,13 @@
 .DS_Store
+*.pyc
 cluster_deployer/playbook/roles/deploy_nfs/files/autofs/*
 cluster_deployer/playbook/roles/deploy_torque/templates/config
 cluster_deployer/playbook/hosts
 cluster_deployer/playbook/roles/deploy_torque/templates/server_name
 cluster_deployer/playbook/roles/deploy_torque/templates/etc_hosts
 cluster_deployer/playbook/roles/deploy_nfs/files/exports
+cluster_deployer/playbook/roles/deploy_fstab/files/volumes
+cluster_deployer/playbook/roles/deploy_fstab/files/fstab
+cluster_deployer/playbook/roles/deploy_nis/defaults/main.yml
 cluster_deployer/playbook/ansible.cfg
 __pycache__

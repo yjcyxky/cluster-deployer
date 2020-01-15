@@ -1,5 +1,5 @@
 ---
-# Ansible playbook to install torque - main.yml
+# Ansible playbook to install fstab - main.yml
 #
 # Copyright (C) 2016-2020 Jingcheng Yang <yjcyxky@163.com>
 #
@@ -13,20 +13,10 @@
 # GNU General Public License for more details.
 #
 
-# 必须先安装计算节点再安装管理节点
-- name: install torque to workers
-  hosts: workers
+# 必须先配置 fstab，将卷挂载在指定目录
+- name: Modify fstab file of the storage server
+  hosts: storage
   roles:
-    - role: 'deploy_torque'
-      torque_type_of_node: 'mom'
-      internet_network: 'no'
-
-- name: install torque to managers
-  hosts: managers
-  roles:
-    - role: 'deploy_torque'
-      torque_server: "{{ansible_hostname}}"
-      torque_type_of_node: 'server'
-      internet_network: 'no'
+    - role: 'deploy_fstab'
 
 ...

@@ -1,15 +1,15 @@
 - name: restart {{scheduler_service}}
   service: name={{scheduler_service}} state=restarted enabled=yes
-  become: True
+  become: yes
 
 - name: restart {{server_service}}
   service: name={{server_service}} state=restarted enabled=yes
-  become: True
+  become: yes
 
 - name: restart {{mom_service}}
   service: name={{mom_service}} state=restarted enabled=yes
-  become: True
+  become: yes
 
 - name: restart munge
   service: name=munge state=restarted
-  become: True
+  become: yes
