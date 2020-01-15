@@ -1,43 +1,44 @@
-  # RedHat related OSs
-  - name: Copy required packages
-    copy: src={{item}} dest=/tmp/{{item}}
-    with_items: '{{torque_worker_packages}}'
+---
+# RedHat related OSs
+- name: Copy required packages
+  copy: src={{item}} dest=/tmp/{{item}}
+  with_items: '{{torque_worker_packages}}'
 
-  - name: Install rpm torque packages
-    yum: 
-      name: /tmp/{{item}}
-      state: present
-    with_items: '{{torque_worker_packages}}'
-    become: yes
+- name: Install rpm torque packages
+  yum: 
+    name: /tmp/{{item}}
+    state: present
+  with_items: '{{torque_worker_packages}}'
+  become: yes
 
-  - name: reload systemd
-    command: systemctl --system daemon-reload
-    become: yes
+- name: reload systemd
+  command: systemctl --system daemon-reload
+  become: yes
 
-  - name: set the server_name for pbs_mom
-    template: src=server_name dest=/var/spool/torque/server_name
-    notify:
-      - restart {{mom_service}}
-    become: yes
+- name: set the server_name for pbs_mom
+  template: src=server_name dest=/var/spool/torque/server_name
+  notify:
+    - restart {{mom_service}}
+  become: yes
 
-  - name: set the config for pbs_mom
-    template: src=config dest=/var/spool/torque/mom_priv/config
-    notify:
-      - restart {{mom_service}}
-    become: yes
+- name: set the config for pbs_mom
+  template: src=config dest=/var/spool/torque/mom_priv/config
+  notify:
+    - restart {{mom_service}}
+  become: yes
 
-  - name: start {{mom_service}}
-    service: name={{mom_service}} state=restarted enabled=yes
-    become: yes
+- name: start {{mom_service}}
+  service: name={{mom_service}} state=restarted enabled=yes
+  become: yes
 
-  - name: Create munge key on the server
-    command: /usr/sbin/create-munge-key creates=/etc/munge/munge.key
-    notify:
-      - restart munge
-    become: yes
+- name: Create munge key on the server
+  command: /usr/sbin/create-munge-key creates=/etc/munge/munge.key
+  notify:
+    - restart munge
+  become: yes
 
-  - name: set the attributes of munge key file
-    file: path=/etc/munge/munge.key owner=munge group=munge mode=0400
-    notify:
-      - restart munge
-    become: yes
+- name: set the attributes of munge key file
+  file: path=/etc/munge/munge.key owner=munge group=munge mode=0400
+  notify:
+    - restart munge
+  become: yes

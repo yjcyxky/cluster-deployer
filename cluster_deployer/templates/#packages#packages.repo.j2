@@ -1,0 +1,7 @@
+[packages]
+name=Needful packages for CentOS 7
+baseurl={{ hpc_conf.packages.yum_repo }}
+failovermethod=priority
+enabled=1
+gpgkey={{ hpc_conf.packages.gpgkey }}
+gpgcheck=1

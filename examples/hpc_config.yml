@@ -23,6 +23,24 @@ ansible:
 ### workers区块支持定义多台机器，当有N台计算节点需要配置时，应该将其均添加进来
 hpc_conf:
   # 以下区块需要依据集群变更情况进行修改
+  packages:
+    packages: []
+    yum_repo: "http://download.fedoraproject.org/pub/epel/7/SRPMS"
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"
+    enable_cluster_utils: True
+    cluster_utils_root: "/opt/local/"
+    cluster_utils_repo: "https://github.com/go-choppy/cluster-utils"
+    enable_module: True
+    modulepath: ""
+    path: ""
+  infiniband:
+    packages: []
+    yum_repo: "http://download.fedoraproject.org/pub/epel/7/SRPMS"
+    gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7"
+  nis:
+    nis_domain: fgci.csc.fi
+    nis_server_address: 192.192.192.10
+    nis_secure_net: "255.255.0.0 192.192.0.0"
   storage: 
     node_name: "anchordx"
     ip: 192.192.192.10

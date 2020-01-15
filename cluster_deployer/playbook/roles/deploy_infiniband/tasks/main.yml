@@ -1,0 +1,8 @@
+- name: Set yum repo
+  template: src=infiniband.repo dest=/etc/yum.repos.d/infiniband.repo
+  become: yes
+
+- name: Install infiniband driver
+  yum: name={{ item }} state=installed
+  with_items: "{{ packages }}"
+  become: yes

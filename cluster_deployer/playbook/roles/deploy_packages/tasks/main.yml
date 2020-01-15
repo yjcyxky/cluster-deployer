@@ -1,0 +1,20 @@
+- name: Set yum repo
+  template: src=packages.repo dest=/etc/yum.repos.d/packages.repo
+  become: yes
+
+- name: Install needful packages
+  yum: name={{ item }} state=installed
+  with_items: "{{ packages }}"
+  become: yes
+
+- name: Deploy cluster-utils
+  git:
+    repo: "{{ cluster_utils_repo }}"
+    dest: "{{ cluster_utils_root }}/cluster-utils"
+  when: type_of_node == 'manager' and enable_cluster_utils
+
+- name: Insert/Update configuration into bashrc
+  blockinfile:
+    block: "{{ lookup('file', 'bashrc') }}"
+    dest: /etc/bashrc
+  become: yes

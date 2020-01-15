@@ -1,65 +1,65 @@
 ---
-  # RedHat related OSs
-  - name: Copy torque_server packages
-    copy: src={{item}} dest=/tmp/{{item}}
-    with_items: '{{torque_manager_packages}}'
+# RedHat related OSs
+- name: Copy torque_server packages
+  copy: src={{item}} dest=/tmp/{{item}}
+  with_items: '{{torque_manager_packages}}'
 
-  - name: Install rpm torque packages
-    yum: 
-      name: /tmp/{{item}}
-      state: present
-    with_items: '{{torque_manager_packages}}'
-    become: yes
+- name: Install rpm torque packages
+  yum: 
+    name: /tmp/{{item}}
+    state: present
+  with_items: '{{torque_manager_packages}}'
+  become: yes
 
-  - name: reload systemd
-    command: systemctl --system daemon-reload
-    become: yes
+- name: reload systemd
+  command: systemctl --system daemon-reload
+  become: yes
 
-  # Torque tasks
-  - name: set server_name
-    copy: content={{torque_server}} dest=/var/spool/torque/server_name
-    notify:
-      - restart {{server_service}}
-      - restart {{scheduler_service}}
-    become: yes
+# Torque tasks
+- name: set server_name
+  copy: content={{torque_server}} dest=/var/spool/torque/server_name
+  notify:
+    - restart {{server_service}}
+    - restart {{scheduler_service}}
+  become: yes
 
-  - name: set maui.cfg
-    template: src=maui.cfg dest=/var/spool/maui/maui.cfg
-    notify:
-      - restart {{server_service}}
-      - restart {{scheduler_service}}
-    become: yes
+- name: set maui.cfg
+  template: src=maui.cfg dest=/var/spool/maui/maui.cfg
+  notify:
+    - restart {{server_service}}
+    - restart {{scheduler_service}}
+  become: yes
 
-  # - name: set ssh known hosts
-  #   template: src=ssh_known_hosts.conf dest=/etc/ssh/ssh_known_hosts
-  #   become: yes
+# - name: set ssh known hosts
+#   template: src=ssh_known_hosts.conf dest=/etc/ssh/ssh_known_hosts
+#   become: yes
 
-  - name: create munge key
-    command: /usr/sbin/create-munge-key creates=/etc/munge/munge.key
-    notify:
-      - restart munge
-    become: yes
-   
-  - name: set the attributes of munge key file
-    file: path=/etc/munge/munge.key owner=munge group=munge mode=0400
-    notify:
-      - restart munge
-    become: yes
+- name: create munge key
+  command: /usr/sbin/create-munge-key creates=/etc/munge/munge.key
+  notify:
+    - restart munge
+  become: yes
+  
+- name: set the attributes of munge key file
+  file: path=/etc/munge/munge.key owner=munge group=munge mode=0400
+  notify:
+    - restart munge
+  become: yes
 
-  - name: start scheduler_service
-    service: name={{scheduler_service}} state=restarted enabled=yes
-    become: yes
+- name: start scheduler_service
+  service: name={{scheduler_service}} state=restarted enabled=yes
+  become: yes
 
-  - name: start server_service
-    service: name={{server_service}} state=restarted enabled=yes
-    become: yes
+- name: start server_service
+  service: name={{server_service}} state=restarted enabled=yes
+  become: yes
 
-  - name: start munge
-    service: name=munge state=restarted enabled=yes
-    become: yes
+- name: start munge
+  service: name=munge state=restarted enabled=yes
+  become: yes
 
-  - name: create a queue
-    shell: cat "{{ lookup('file', 'queue.txt') }}" | qmgr creates=/var/spool/torque/server_priv/queues/batch
-    become: yes
+- name: create a queue
+  shell: cat "{{ lookup('file', 'queue.txt') }}" | qmgr creates=/var/spool/torque/server_priv/queues/batch
+  become: yes
 
 ...

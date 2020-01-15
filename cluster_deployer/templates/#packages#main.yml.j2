@@ -1,0 +1,8 @@
+---
+# defaults file for deploy_infiniband
+
+packages: {{ hpc_conf.packages.packages }}
+enable_cluster_utils: {{ hpc_conf.packages.enable_cluster_utils }}
+enable_module: {{ hpc_conf.packages.enable_module }}
+cluster_utils_root: "{{ hpc_conf.packages.cluster_utils_root }}"
+cluster_utils_repo: "{{ hpc_conf.packages.cluster_utils_repo }}"

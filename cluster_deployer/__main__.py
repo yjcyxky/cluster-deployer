@@ -78,14 +78,14 @@ def gen_config_file(config_vars, template_file, output_dir):
                     f.write(render(pool_config_vars, template_file, TEMPLATE_DIR))
             return True
 
-        if re.search("[a-zA-Z0-9\.\-_]+\.j2", template_file):
+        if re.search("[a-zA-Z0-9\.\-_#]+\.j2", template_file):
             output_file = template_file[:-3]
             output_file = re.sub(r"#.*#", "", output_file)
             with open(os.path.join(output_dir, output_file), "w") as f:
                 f.write(render(config_vars, template_file, TEMPLATE_DIR))
             return True
         else:
-            print("模板文件名不符合要求，只能包含大小写字母、数字、下划线、点号，且末尾必须以.j2结尾")
+            print("%s: 模板文件名不符合要求，只能包含大小写字母、数字、下划线、#号、点号，且末尾必须以.j2结尾" % template_file)
             sys.exit(2)
 
     if isinstance(template_file, tuple) and isinstance(output_dir, tuple):
@@ -109,9 +109,17 @@ def set_config(hpc_config_file=None):
     HPC_CONFIG = parse_hpc_config(HPC_CONFIG_FILE)
     PLAYBOOK_DIR = os.path.join(BASE_DIR, "playbook")
     ROLE_DIR = os.path.join(BASE_DIR, "playbook", "roles")
+
     NFS_FILES_DIR = os.path.join(ROLE_DIR, "deploy_nfs", "files")
     FSTAB_FILES_DIR = os.path.join(ROLE_DIR, "deploy_fstab", "files")
     NIS_DEFAULT_DIR = os.path.join(ROLE_DIR, "deploy_nis", "defaults")
+
+    INFINIBAND_FILES_DIR = os.path.join(ROLE_DIR, "deploy_infiniband", "files")
+    INFINIBAND_DEFAULT_DIR = os.path.join(ROLE_DIR, "deploy_infiniband", "defaults")
+
+    PACKAGES_FILES_DIR = os.path.join(ROLE_DIR, "deploy_packages", "files")
+    PACKAGES_DEFAULT_DIR = os.path.join(ROLE_DIR, "deploy_packages", "defaults")
+
     AUTOFS_FILES_DIR = os.path.join(NFS_FILES_DIR, "autofs")
     TORQUE_TEMPLATE_DIR = os.path.join(ROLE_DIR, "deploy_torque", "templates")
 
@@ -125,10 +133,12 @@ def set_config(hpc_config_file=None):
         "hpc_conf": {
             "output_dir": (PLAYBOOK_DIR, TORQUE_TEMPLATE_DIR, AUTOFS_FILES_DIR, AUTOFS_FILES_DIR,
                            NFS_FILES_DIR, TORQUE_TEMPLATE_DIR, TORQUE_TEMPLATE_DIR, FSTAB_FILES_DIR,
-                           FSTAB_FILES_DIR, NIS_DEFAULT_DIR),
+                           FSTAB_FILES_DIR, NIS_DEFAULT_DIR, INFINIBAND_DEFAULT_DIR, INFINIBAND_FILES_DIR,
+                           PACKAGES_DEFAULT_DIR, PACKAGES_FILES_DIR),
             "template_file": ("hosts.j2", "etc_hosts.j2", "auto.master.j2", "auto.pool.j2",
                               "exports.j2", "config.j2", "server_name.j2", "fstab.j2",
-                              "volumes.j2", "#nis#main.yml.j2"),
+                              "volumes.j2", "#nis#main.yml.j2", "#infiniband#main.yml.j2", "#infiniband#infiniband.repo.j2",
+                              "#packages#main.yml.j2", "#packages#packages.repo.j2"),
             "config_vars": HPC_CONFIG.fromkeys(("hpc_conf",), HPC_CONFIG.get("hpc_conf"))
         }
     }
