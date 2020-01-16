@@ -40,7 +40,7 @@ hpc_conf:
     cluster_utils_root: "/opt/local"
     cluster_utils_repo: "https://github.com/go-choppy/cluster-utils"
     enable_module: True
-    packages: ["environment-modules", "jq"]
+    packages: ["environment-modules", "jq", "python-paramiko"]
     conda_url: "https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda2-latest-Linux-x86_64.sh"
   infiniband:
     packages: []
