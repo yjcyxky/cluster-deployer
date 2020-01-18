@@ -35,23 +35,38 @@ git clone https://github.com/go-choppy/cluster-deployer
 # 安装前置依赖
 yum install sshpass
 
-# 使用 conda
+# 依据机器实际情况，选择安装方式
+## 1. 使用 conda
+
+### 创建 cluster-deployer 环境
 conda create -n cluster-deployer python=3.7
 
-## 激活环境
+### 激活环境（ 务必激活环境后再安装依赖库 ）
 conda activate cluster-deployer
 
-## 安装依赖
+### 安装依赖，requirements 文件位于 cluster-deployer 目录下
 pip3 install -r ~/cluster-deployer/requirements
 
-# 使用 virtualenv
-virtualenv .env
+## 2. 使用 virtualenv
+### 确认是否按照 Python3、pip3 和 virtualenv
+which python3
+which pip3
+which virtualenv
 
-## 激活环境
+### 若未安装，则通过以下命令安装
+yum install python3
+yum install python3-pip
+pip3 install virtualenv
+
+### 切换到 cluster-deployer 目录（ 假定 cluster-deployer 位于 HOME 目录 ）
+cd ~/cluster-deployer
+virtualenv .env -p python3
+
+## 激活环境（ 务必激活环境后再安装依赖库 ）
 source .env/bin/activate
 
 ## 安装依赖
-pip3 install -r ~/cluster-deployer/requirements
+pip3 install -r requirements
 ```
 
 ## 配置环境变量
