@@ -21,9 +21,15 @@
 ansible:
   priv_key_file: /Users/FK/.ssh/id_rsa
 
+# 若需要部署 cobbler，则需要依据需求修改以下配置
 cobbler:
+  # The simplest way to change the password is to run
+  # openssl passwd -1
+  # and put the output between the "" below.
   cobbler_default_password_crypted: $1$0j9R7J3U$qhH8N9oXlytT.pEjjSud60
+  # bind cobbler webserver with network interface, e.g. eth1 / em1
   bound_interface: eth1
+  # e.g. listen on eth4 / em4 network interface
   cobbler_dhcp_listen_interfaces: eth1
   subnet:
     cobbler_dhcp_subnet: 10.0.2.0
