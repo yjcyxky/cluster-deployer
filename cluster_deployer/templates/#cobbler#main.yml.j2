@@ -1,0 +1,111 @@
+---
+# Default values suitable for a Vagrant environment
+
+# settings
+# WARNING: The default password is "changeme" fine for demo purposes
+# but should be set to something more secure.
+cobbler_default_password_crypted: {{ cobbler.cobbler_default_password_crypted }}
+bound_interface: {{ cobbler.bound_interface }}
+
+cobbler_get_loaders: true
+cobbler_signature_update: true
+cobbler_proxy_url_ext:
+# dhcpd
+cobbler_dhcp_listen_interfaces: {{ cobbler.cobbler_dhcp_listen_interfaces }}
+
+# dhcp.template
+subnets:
+  - {
+      cobbler_dhcp_subnet: {{ cobbler.subnet.cobbler_dhcp_subnet | default("10.0.2.0") }},
+      cobbler_dhcp_netmask: 255.255.255.0,
+      cobbler_dhcp_option_routers: {{ cobbler.subnet.cobbler_dhcp_option_routers | default("10.0.2.2")  }},
+      cobbler_dhcp_option_domain_name_servers: {{ cobbler.subnet.cobbler_dhcp_option_domain_name_servers | default("10.0.2.2") }},
+      cobbler_dhcp_option_subnet_mask: 255.255.255.0,
+      cobbler_dhcp_dynamic_bootp_start: {{ cobbler.subnet.cobbler_dhcp_dynamic_bootp_start | default("10.0.2.100") }},
+      cobbler_dhcp_dynamic_bootp_end: {{ cobbler.subnet.cobbler_dhcp_dynamic_bootp_end | default("10.0.2.254") }},
+    }
+# ubuntu repo
+cobbler_manage_repo: true
+cobbler_ubuntu_release: 14.04
+cobbler_ubuntu_dependiences_fix: http://launchpadlibrarian.net/109052632/python-support_1.0.15_all.deb
+cobbler_ubuntu_repo_url: "http://download.opensuse.org/repositories/home:/libertas-ict:/cobbler26/xUbuntu_{{ cobbler_ubuntu_release }}/"
+
+# cobbler version
+cobbler_version: "2.6.11-1"
+
+# ubuntu preseed
+ubuntu_mirror: archive.ubuntu.com
+
+kickstarts: []
+#  - {
+#    src: ../../files/cobbler/ubuntu-server.seed,
+#    dest: /var/lib/cobbler/kickstarts/ubuntu-server.preseed
+#    }
+
+# cobbler distros iso
+distros: []
+#  - {
+#      name: ubuntu-14.04-mini,
+#      arch: x86_64,
+#      url: 'http://archive.ubuntu.com/ubuntu/dists/trusty/main/installer-amd64/current/images/netboot/mini.iso',
+#      file: /root/iso/ubuntu-14.04-mini.iso,
+#      path: /root/iso/ubuntu-14.04-mini/,
+#      kickstart: /var/lib/cobbler/kickstarts/ubuntu-server.preseed
+#    }
+
+# cobbler distro imports
+# Uncomment (and change) the following lines if you wish to import a distro.
+distro_imports: []
+#   - {
+#       name: centos-6.6,
+#       arch: x86_64,
+#       url: 'rsync://mirrors.nl.kernel.org::centos/6.6/os/x86_64/'',
+#     }
+#   - {
+#       name: centos-7.0.1406,
+#       arch: x86_64,
+#       url: 'rsync://mirrors.nl.kernel.org::centos/6.6/os/x86_64/',
+#     }
+
+# cobbler repos
+# Uncomment (and change) the following lines if you wish to add a repo.
+repos: []
+#   - {
+#       name: centos-updates-6.6-x86_64,
+#       arch: x86_64,
+#       mirror: 'http://mirrors.nl.kernel.org/centos/6.6/updates/x86_64/',
+#       mirror_locally: Y,
+#     }
+#   - {
+#       name: epel-6-x86_64,
+#       arch: x86_64,
+#       mirror: 'http://mirrors.nl.kernel.org/fedora-epel/6/x86_64/',
+#       mirror_locally: Y,
+#     }
+
+# cobbler profiles
+# Uncomment (and change) the following lines if you wish to add a profile.
+profiles: []
+#   - {
+#       name: centos-6.6-x86_64,
+#       distro: centos-6.6-x86_64,
+#       kickstart: /var/lib/cobbler/kickstarts/sample_end.ks,
+#       ksmeta: 'ksvariable=hello',
+#       repos: 'centos-updates-6.6-x86_64 epel-6-x86_64',
+#     }
+
+# cobbler systems
+systems: []
+#   - {
+#       name: cobbler-node1,
+#       hostname: cobbler-node1.local,
+#       profile: ubuntu-14.04-mini-x86_64,
+#       interface: eth0,
+#       ip: 10.0.2.100,
+#       netmask: 255.255.255.0,
+#       gateway: 10.0.2.2,
+#       mac: '00:50:56:25:2B:19',
+#       netboot: 'false'
+#      dhcptag: 192.168.10.0,
+#      next_server: 192.168.10.11
+#     }

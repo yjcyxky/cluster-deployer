@@ -124,6 +124,8 @@ def set_config(hpc_config_file=None):
     AUTOFS_FILES_DIR = os.path.join(NFS_FILES_DIR, "autofs")
     TORQUE_TEMPLATE_DIR = os.path.join(ROLE_DIR, "deploy_torque", "templates")
 
+    COBBLER_DEFAULT_DIR = os.path.join(ROLE_DIR, "deploy_cobbler", "defaults")
+
     ARGS_CONFIG = {
         "ansible": {
             "output_dir": (os.path.join(BASE_DIR, "playbook"),),
@@ -140,7 +142,12 @@ def set_config(hpc_config_file=None):
                               "exports.j2", "config.j2", "server_name.j2", "fstab.j2",
                               "volumes.j2", "#nis#main.yml.j2", "#infiniband#main.yml.j2", "#infiniband#infiniband.repo.j2",
                               "#packages#main.yml.j2", "#packages#packages.repo.j2", "#packages#bashrc.j2"),
-            "config_vars": HPC_CONFIG.fromkeys(("hpc_conf",), HPC_CONFIG.get("hpc_conf"))
+            "config_vars": {**HPC_CONFIG.fromkeys(("hpc_conf",), HPC_CONFIG.get("hpc_conf")), **HPC_CONFIG.fromkeys(("cobbler",), HPC_CONFIG.get("cobbler"))}
+        },
+        "cobbler": {
+            "output_dir": (COBBLER_DEFAULT_DIR,),
+            "template_file": ("#cobbler#main.yml.j2",),
+            "config_vars": HPC_CONFIG.fromkeys(("cobbler",), HPC_CONFIG.get("cobbler"))
         }
     }
 
@@ -218,11 +225,14 @@ def init(c):
     check_hpc_conf(HPC_CONFIG.get("hpc_conf"))
 
     if gen_config_file(**ARGS_CONFIG.get("ansible")):
-        print("生成ansible.cfg配置文件：成功")
+        print("生成 ansible.cfg 配置文件：成功")
 
     # generate cobbler host configure file
     if gen_config_file(**ARGS_CONFIG.get("hpc_conf")):
-        print("生成hosts/etc_hosts/autofs配置文件：成功")
+        print("生成 hosts/etc_hosts/autofs/nis/nfs/torque/infiniband/packages 配置文件：成功")
+
+    if gen_config_file(**ARGS_CONFIG.get("cobbler")):
+        print("生成 cobbler 配置文件：成功")
 
 
 @click.group()
@@ -231,7 +241,7 @@ def run_cli():
 
 
 @run_cli.command(help="Deploy HPC Cluster.")
-@click.argument("command", type=click.Choice(["torque", "nfs", "infiniband", "fstab", "packages", "nis"]))
+@click.argument("command", type=click.Choice(["torque", "nfs", "infiniband", "fstab", "packages", "nis", "cobbler"]))
 @click.option("--skip", "-s", help="Skip the check_prerequisite", is_flag=True)
 @click.option("--debug", "-d", help="Show debug information.", is_flag=True)
 def deploy(command, skip, debug):

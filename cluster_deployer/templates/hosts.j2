@@ -9,3 +9,6 @@
 
 [storage]
 {{ hpc_conf.storage.node_name }} ansible_ssh_host={{ hpc_conf.storage.ip }} ansible_ssh_port={{ hpc_conf.storage.port }} ansible_ssh_user={{ hpc_conf.storage.user }} infiniband_ip={{ hpc_conf.storage.infiniband_ip }}
+
+[cobbler_server]
+{{ cobbler.cobbler.node_name }} ansible_ssh_host={{ cobbler.cobbler.ip }} ansible_ssh_port={{ cobbler.cobbler.port }} ansible_ssh_user={{ cobbler.cobbler.user }}

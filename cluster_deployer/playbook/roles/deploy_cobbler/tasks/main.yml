@@ -1,0 +1,279 @@
+---
+# file: main.yml
+# The tasks for the Cobbler role
+
+# -------------
+# Prerequisites
+# -------------
+
+- name: unsupported package manager
+  fail: msg='this playbook requries RedHat or Debian based system'
+  when: ansible_os_family|lower != 'redhat' and ansible_os_family|lower != 'debian'
+
+- name: Include OS specific tasks
+  include: '{{ ansible_os_family | lower }}.yml'
+
+- name: Include OS required variables
+  include_vars: '{{ ansible_os_family | lower }}.yml'
+
+- include: firewall.yml
+
+- name: make directory (/srv/www/cobbler)
+  file:
+    path: /srv/www/cobbler
+    state: directory
+    mode: '0755'
+
+# -------
+# Cobbler
+# -------
+- name: install cobbler (yum)
+  yum: 
+    name:
+      - cobbler
+      - cobbler-web
+    state: present
+  when: ansible_pkg_mgr == 'yum'
+
+- name: install cobbler (apt)
+  apt: 
+    name:
+      - cobbler={{ cobbler_version }}
+      - cobler-web
+    state: present
+  when: ansible_pkg_mgr == 'apt'
+
+- name: enable required apache modules
+  apache2_module: state=present name={{ item }}
+  with_items:
+    - proxy
+    - proxy_http
+    - status
+  when: apache_service_name == 'apache2'
+
+- name: copy cobbler config files
+  copy: src=cobbler.conf
+        dest=/etc/apache2/conf-enabled/cobbler.conf
+        mode=0644
+  when: apache_service_name == 'apache2'
+
+- name: copy cobbler_web config files
+  copy: src=cobbler_web.conf
+        dest=/etc/apache2/conf-enabled/cobbler_web.conf
+        mode=0644
+  notify:
+    - restart apache
+  when: apache_service_name == 'apache2'
+
+- name: configure xinetd rsync
+  copy: src=rsync
+        dest=/etc/xinetd.d/
+        owner=root group=root mode=0644
+  notify:
+    - restart xinetd
+
+- name: start and enable xinetd
+  service: name={{ item }} state=started enabled=true
+  with_items:
+    - xinetd
+    - "{{ apache_service_name }}"
+
+- meta: flush_handlers
+
+- name: configure cobbler
+  template: src=settings.j2 dest=/etc/cobbler/settings
+  notify:
+    - restart cobbler
+    - wait for cobbler
+    - sync cobbler
+
+- name: start and enable cobbler
+  service: name={{ daemon }} state=started enabled=true
+
+- name: wait for cobbler
+  wait_for: host=127.0.0.1 port=25151 delay=5 timeout=30 state=started
+
+- name: get cobbler loaders
+  command: cobbler get-loaders
+  args:
+    creates: /var/lib/cobbler/loaders/README
+  when: cobbler_get_loaders
+  notify:
+    - restart cobbler
+    - wait for cobbler
+    - sync cobbler
+
+- name: update cobbler signatures
+  command: cobbler signature update
+  when: cobbler_signature_update
+  notify:
+    - restart cobbler
+    - wait for cobbler
+    - sync cobbler
+
+- name: configure cobbler dhcp
+  template: src=dhcp.template.j2 dest=/etc/cobbler/dhcp.template
+  notify:
+    - restart cobbler
+    - wait for cobbler
+    - sync cobbler
+
+# ---------------------
+# Cobbler Kickstarts
+# ---------------------
+
+- name: adding defualt ubuntu preseed
+  template: src=ubuntu-server.preseed.j2 dest=/etc/cobbler/ubuntu-server.preseed
+
+- name: copy user defined kickstart files
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0644') }}"
+  with_items: "{{ kickstarts }}"
+  notify:
+    - restart cobbler
+
+# ---------------------
+# Cobbler Distributions
+# ---------------------
+
+# Attempt to un-mount any previous disto mount points, can occur if previous run failed
+- name: umount isos
+  ignore_errors: yes
+  shell: umount {{ item.path | quote }}
+  with_items:
+    - "{{ distros }}"
+  when: distros is defined
+
+- name: create iso directory to hold distro images
+  file: path=~/iso state=directory
+
+# Download each defined distro ISO if it doesn't already exist
+- name: download distro iso files
+  get_url: url={{ item.url }} dest={{ item.file }}
+  with_items:
+    - "{{ distros }}"
+  when: distros is defined
+
+# Add the each distro/profile pair only if the distro doesn't already exist
+- name: check distro exists in cobbler
+  shell: "cobbler distro report --name={{ item.name | quote }}-{{ item.arch | quote }} > /dev/null"
+  ignore_errors: yes
+  changed_when: no
+  register: distro_result
+  when: distros is defined
+  with_items:
+    - "{{ distros }}"
+
+- debug: msg="Distro watch {{ distro_result }}"
+
+- name: add distro/profile pairs to cobbler
+  shell: >
+    (mkdir -p {{ item.path | quote }}
+    && mount -t iso9660 -o loop,ro {{ item.file | quote }} {{ item.path | quote }}
+    && cobbler import --path={{ item.path | quote }} --name={{ item.name | quote }} --arch={{ item.arch | quote }} {% if item.kickstart is defined %}--kickstart={{ item.kickstart | quote }}{% endif %}
+    && umount {{ item.path | quote }})
+  with_items:
+    - "{{ distros }}"
+  when: distros is defined and distro_result|failed
+  notify:
+    - restart cobbler
+    - wait for cobbler
+    - sync cobbler
+
+#- name: check distro for import exists in cobbler
+#  with_items: distro_imports
+#  command: cobbler distro report --name="{{ item.name }}"
+#  register: distro_imports_result
+#  ignore_errors: true
+#  when: distro_imports is defined
+
+#- name: import distro to cobbler
+#  shell: cobbler import --name="{{ item.name }}-{{ item.arch }}" --path="{{ item.url }}" --arch="{{ item.arch }}"
+#  with_items: distro_imports
+#  when: distro_imports is defined and distro_imports_result|failed
+#  notify:
+#    - restart cobbler
+#    - wait for cobbler
+#    - sync cobbler
+
+# ---------------
+# Cobbler Repos
+# ---------------
+
+- name: add repos to cobbler
+  shell: >
+    cobbler repo add
+    --clobber
+    --name={{ item.name | quote }}
+    --mirror={{ item.mirror | quote }}
+    {% if item.arch is defined %}--arch={{ item.arch | quote }}{% endif %}
+    {% if item.mirror_locally is defined %}--mirror-locally={{ item.mirror_locally | quote }}{% endif %}
+  when: repos is defined
+  with_items:
+    - "{{ repos }}"
+  notify:
+    - restart cobbler
+    - wait for cobbler
+    - sync cobbler
+
+# ---------------
+# Cobbler Profiles
+# ---------------
+
+- name: add profiles to cobbler
+  shell: >
+    cobbler profile add
+    --clobber
+    --name={{ item.name | quote }}
+    --distro={{ item.distro | quote }}
+    {% if item.kickstart is defined %}--kickstart={{ item.kickstart | quote }}{% endif %}
+    {% if item.ksmeta is defined %}--ksmeta={{ item.ksmeta | quote }}{% endif %}
+    {% if item.kopts is defined %}--kopts={{ item.kopts | quote }}{% endif %}
+    {% if item.kopts_post is defined %}--kopts-post={{ item.kopts_post | quote }}{% endif %}
+    {% if item.repos is defined %}--repos={{ item.repos | quote }}{% endif %}
+  when: profiles is defined
+  with_items:
+    - "{{ profiles }}"
+  notify:
+    - restart cobbler
+    - wait for cobbler
+    - sync cobbler
+
+# ---------------
+# Cobbler Systems
+# ---------------
+
+- debug: var=systems
+
+- name: add systems to cobbler
+  shell: >
+    cobbler system add
+    --clobber
+    --name={{ item.name | quote }}
+    --hostname={{ item.hostname | quote }}
+    --profile={{ item.profile | quote }}
+    --ip-address={{ item.ip | quote }}
+    --subnet={{ item.netmask | quote }}
+    --gateway={{ item.gateway | quote }}
+    --mac={{ item.mac | quote }}
+    --interface={{ item.interface | quote }}
+    {% if item.netboot is defined %}--netboot-enabled={{ item.netboot | quote }}{% endif %}
+    {% if item.dns_name is defined %}--dns_name={{ item.dns_name | quote }}{% endif %}
+    {% if item.static is defined %}--static={{ item.static }}{% endif %}
+    {% if item.kopts is defined %}--kopts={{ item.kopts | quote }}{% endif %}
+    {% if item.kopts_post is defined %}--kopts-post={{ item.kopts_post | quote }}{% endif %}
+    {% if item.ksmeta is defined %}--ksmeta={{ item.ksmeta | quote }}{% endif %}
+    {% if item.dhcptag is defined %}--dhcp-tag={{ item.dhcptag | quote }}{% endif %}
+    {% if item.next_server is defined %}--server={{ item.next_server | quote }}{% endif %}
+    {% if item.mgmt_classes is defined %}--mgmt-classes={{ item.mgmt_classes }}{% endif %}
+  when: systems is defined
+  with_items:
+    - "{{ systems }}"
+  notify:
+    - restart cobbler
+    - wait for cobbler
+    - sync cobbler

@@ -22,6 +22,10 @@ DEVICE=enp1s0f0
 ONBOOT=yes
 ```
 
+## 假设条件
+1. 所有机器，包括管理节点、存储节点和计算节点，已经通过 vHPC 安装好操作系统，并配置好 supersan 等账户
+2. 所有操作均由 supersan 用户完成（默认情况下，vHPC 安装完操作系统后已经将 supersan 用户添加为 sudoer）
+
 ## 下载 cluster-deployer
 
 ```
@@ -48,6 +52,7 @@ conda activate cluster-deployer
 pip3 install -r ~/cluster-deployer/requirements
 
 ## 2. 使用 virtualenv
+
 ### 确认是否按照 Python3、pip3 和 virtualenv
 which python3
 which pip3
