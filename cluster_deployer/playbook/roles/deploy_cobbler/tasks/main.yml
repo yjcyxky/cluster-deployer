@@ -16,7 +16,14 @@
 - name: Include OS required variables
   include_vars: '{{ ansible_os_family | lower }}.yml'
 
-- include: firewall.yml
+# Shutdown firewalld
+# - include: firewall.yml
+
+- name: Shutdown firewalld
+  systemd:
+    state: stopped
+    name: firewalld
+    enabled: no
 
 - name: make directory (/srv/www/cobbler)
   file:
